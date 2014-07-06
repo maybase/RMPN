@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar" sourcepath="/eclipse/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar" sourcepath="/eclipse/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar" sourcepath="/eclipse/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar" sourcepath="/eclipse/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar" sourcepath="/eclipse/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar" sourcepath="/eclipse/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.swt.win32.win32.x86_3.7.2.v3740f.jar" sourcepath="/eclipse/plugins/org.eclipse.swt.win32.win32.x86_3.7.2.v3740f.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar" sourcepath="/eclipse/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar" sourcepath="/eclipse/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar" sourcepath="/eclipse/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="/eclipse/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+	<classpathentry kind="lib" path="F:/eclipse/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar" sourcepath="/eclipse/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-all-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/iText-2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-5.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-fonts-5.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/sqlitejdbc-v056.jar"/>
+	<classpathentry kind="lib" path="lib/swing2swt.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
