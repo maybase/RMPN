@@ -12,6 +12,7 @@ import com.pawineept.ptm.layout.MedicalRecordLayout;
 import com.pawineept.ptm.layout.MedicalRecordSearchLayout;
 import com.pawineept.ptm.layout.PaymentLayout;
 import com.pawineept.ptm.layout.ScheduleLayout;
+import com.pawineept.ptm.layout.UserManageLayout;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.SWT;
@@ -190,6 +191,18 @@ public class ApplicationMain {
 		
 		MenuItem menuItem_11 = new MenuItem(menu_5, SWT.NONE);
 		menuItem_11.setText("ข้อมูลนักกายภาพ");
+		
+		MenuItem menuItem_12 = new MenuItem(menu_5, SWT.NONE);
+		menuItem_12.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				closeShell();
+				UserManageLayout uml = new UserManageLayout(shell, SWT.NONE);
+				composite = uml;
+				openShell();
+			}
+		});
+		menuItem_12.setText("ข้อมูลผู้ใช้งาน");
 		
 		new MenuItem(menu_5, SWT.SEPARATOR);
 		
