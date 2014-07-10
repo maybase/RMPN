@@ -1,20 +1,21 @@
 package com.pawineept.ptm.model;
 
 public class TbMUser {
-	Integer id;
-	Long prefixId;
-	String user;
-	String pwd;
-	String first_name;
-	String last_name;
-	String last_active;
-	String status;
-	String created_by;
-	String created_date;
-	String updated_by;
-	String updated_date;
+	private Integer id;
+
+	private Long prefixId;
+	private String user;
+	private String pwd;
+	private String first_name;
+	private String last_name;
+	private String last_active;
+	private String status;
+	private String created_by;
+	private String created_date;
+	private String updated_by;
+	private String updated_date;
 	private TbCTitle title ;
-	String chkStatus;
+	private String chkStatus;
 	
 	public String getChkStatus() {
 		return chkStatus;
@@ -28,12 +29,7 @@ public class TbMUser {
 	public void setTitle(TbCTitle title) {
 		this.title = title;
 	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
+	
 	public Long getPrefixId() {
 		return prefixId;
 	}
@@ -45,6 +41,12 @@ public class TbMUser {
 	}
 	public void setUser(String user) {
 		this.user = user;
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	public String getPwd() {
 		return pwd;
