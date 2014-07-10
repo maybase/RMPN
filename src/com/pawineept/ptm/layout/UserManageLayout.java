@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.internal.win32.POINT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.SWT;
@@ -33,10 +34,12 @@ public class UserManageLayout extends Composite {
 	private Text txtFirstName;
 	private Text txtLastName;
 	private Label txtErrorMsg;
-	private Integer userid;
-	private Boolean editMode = false;
+	//private Integer userid;
 	private Button chkStatus;
-
+	public static Integer userid;
+	public static boolean editMode = false;
+	private Label lblNewLabel;
+	private Button btnNewButton_1;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -46,7 +49,7 @@ public class UserManageLayout extends Composite {
 		super(parent, style);
 		setLayout(new GridLayout(6, false));
 		
-		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 6, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("จัดการผู้ใช้งาน");
@@ -132,6 +135,7 @@ public class UserManageLayout extends Composite {
 		new Label(this, SWT.NONE);
 		
 		Button btnNewButton = new Button(this, SWT.NONE);
+		btnNewButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -139,13 +143,32 @@ public class UserManageLayout extends Composite {
 			}
 		});
 		btnNewButton.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		btnNewButton.setText("บันทึก");
+		btnNewButton.setText("บันทึกข้อมูล");
 		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
+		
+		btnNewButton_1 = new Button(this, SWT.NONE);
+		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ApplicationMain.closeShell();
+				UserManageSearchLayout uss = new UserManageSearchLayout(ApplicationMain.shell,SWT.NONE);
+				ApplicationMain.composite = uss;
+				ApplicationMain.openShell();
+				UserManageLayout.editMode = false;
+			}
+		});
+		btnNewButton_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton_1.setText("ค้นหาผู้ใช้งาน");
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
 		initTitleDesc();
+		if(editMode){
+			findEditMode();
+		}else{
+			lblNewLabel.setText("เพิ่มข้อมูลผู้ใช้งาน");
+		}
+		
 	}
 
 	@Override
@@ -163,6 +186,38 @@ public class UserManageLayout extends Composite {
 			txtTitleDesc.select(0);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void findEditMode() {
+		Connection conn = null;
+		try{
+			conn = DBUtil.connect();
+			TbMUserDAO dao = new TbMUserDAO();
+			TbMUser us = new TbMUser();
+			us.setId(userid);
+			dao.select(conn,us);
+			lblNewLabel.setText("แก้ไขข้อมูลผู้ใช้งาน");
+			txtTitleDesc.setText(us.getTitle().getTitleDescTh()==null?"":us.getTitle().getTitleDescTh());
+			txtUser.setText(us.getUser()==null?"":us.getUser());
+			txtPassword.setText(us.getPwd()==null?"":us.getPwd());
+			txtFirstName.setText(us.getFirst_name()==null?"":us.getFirst_name());
+			txtLastName.setText(us.getLast_name()==null?"":us.getLast_name());
+			
+			if(us.getStatus().equals("1")){
+				//System.out.println(" checked : checked ");
+				chkStatus.setSelection(true);
+			}else{
+				//System.out.println(" unchecked : unchecked ");
+				chkStatus.setSelection(false);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			errorMsg("Error: "+e.getMessage());
 		}finally{
 			DBUtil.close(conn);
 		}
@@ -191,12 +246,9 @@ public class UserManageLayout extends Composite {
 			}else{
 				 obj.setStatus("0");  // 0 = InActive
 			}
-			
-			//System.out.println("chkStatus : "+chkStatus.getSelection());
-			//System.out.println("status : "+obj.getStatus());
+
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
 			java.util.Date date = new java.util.Date();
-			//System.out.println("Current Date Time : " + dateFormat.format(date));
 			
 			if(editMode){
 				
@@ -204,7 +256,7 @@ public class UserManageLayout extends Composite {
 				obj.setUpdated_by(ApplicationMain.USERNAME);
 				obj.setUpdated_date(dateFormat.format(date));
 				dao.update(conn, obj);
-				okMsg("อัพเดทเรียบร้อยแล้ว");
+				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
 			}else{
 				
 				obj.setCreated_by(ApplicationMain.USERNAME);
