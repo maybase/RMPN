@@ -205,18 +205,6 @@ public class ApplicationMain {
 		});
 		mntmNewItem.setText("ข้อมูลผู้ใช้งาน");
 		
-		MenuItem menuItem_12 = new MenuItem(menu_5, SWT.NONE);
-		menuItem_12.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				closeShell();
-				UserManageLayout uml = new UserManageLayout(shell, SWT.NONE);
-				composite = uml;
-				openShell();
-			}
-		});
-		menuItem_12.setText("สร้างข้อมูลผู้ใช้งาน");
-		
 		new MenuItem(menu_5, SWT.SEPARATOR);
 		
 		MenuItem menuItem_9 = new MenuItem(menu_5, SWT.NONE);
