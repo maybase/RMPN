@@ -52,7 +52,7 @@ public class TbMUserDAO extends BaseDAO {
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select id , first_name, last_name , user , last_active , case when status = 1 then 'Active' else 'InActive' end as statusname  from tb_m_t_user where 1=2 ");
+		sql.append("select id , first_name, last_name , user , last_active , case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from tb_m_t_user where 1=2 ");
 		for(int i=0; i< name.length; i++){
 			sql.append("OR first_name like ? OR last_name like ? OR user like ? ");
 		}
