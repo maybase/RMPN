@@ -43,6 +43,7 @@ public class TbMBranchDAO extends BaseDAO {
     }
 	
 	public List<TbMBranch> findAllName(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Branch
 		List<TbMBranch> lst = new ArrayList<TbMBranch>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
@@ -80,6 +81,7 @@ public class TbMBranchDAO extends BaseDAO {
 	}
 	
 	public void select(Connection conn,TbMBranch obj2) throws SQLException{
+		//Method : Mode Update and Show Detail Branch
         String sql = "select br.* from TB_M_BRANCH br where br.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -134,4 +136,26 @@ public class TbMBranchDAO extends BaseDAO {
         }
         
     }
+	
+	public List<String> findActiveList(Connection conn) throws SQLException{
+		//Method : Show List of Active Branch
+		List<String> result = new ArrayList<String>();
+		String sql = "select id, branchname from TB_M_BRANCH where status = 1 order by branchname asc ";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result.add(rs.getString("branchname"));
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+	        DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;		
+	}
 }
