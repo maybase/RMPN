@@ -48,6 +48,7 @@ public class TbMUserDAO extends BaseDAO {
     }
 	
 	public List<TbMUser> findAllName(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All User
 		List<TbMUser> lst = new ArrayList<TbMUser>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
@@ -87,6 +88,7 @@ public class TbMUserDAO extends BaseDAO {
 	}
 	
 	public void select(Connection conn,TbMUser obj2) throws SQLException{
+		//Method : Mode Update and Show Detail User
         String sql = "select us.*, ti.titleid ,ti.title_desc_th from tb_m_t_user us , tb_c_title ti where us.prefix_id = ti.titleid and us.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
