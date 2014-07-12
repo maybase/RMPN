@@ -40,6 +40,7 @@ public class UserManageLayout extends Composite {
 	public static boolean editMode = false;
 	private Label lblNewLabel;
 	private Button btnNewButton_1;
+	private Button btnClear;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -47,10 +48,10 @@ public class UserManageLayout extends Composite {
 	 */
 	public UserManageLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(6, false));
+		setLayout(new GridLayout(9, false));
 		
 		lblNewLabel = new Label(this, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 6, 1));
+		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 9, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("จัดการผู้ใช้งาน");
 		
@@ -61,9 +62,10 @@ public class UserManageLayout extends Composite {
 		
 		txtTitleDesc = new Combo(this, SWT.NONE);
 		txtTitleDesc.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		GridData gd_txtTitleDesc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_txtTitleDesc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
 		gd_txtTitleDesc.widthHint = 93;
 		txtTitleDesc.setLayoutData(gd_txtTitleDesc);
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -76,7 +78,7 @@ public class UserManageLayout extends Composite {
 		
 		txtUser = new Text(this, SWT.BORDER);
 		txtUser.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		GridData gd_txtUser = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		GridData gd_txtUser = new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1);
 		gd_txtUser.widthHint = 138;
 		txtUser.setLayoutData(gd_txtUser);
 		new Label(this, SWT.NONE);
@@ -93,6 +95,7 @@ public class UserManageLayout extends Composite {
 		gd_txtPassword.widthHint = 128;
 		txtPassword.setLayoutData(gd_txtPassword);
 		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		
 		Label lblFirstname = new Label(this, SWT.NONE);
 		lblFirstname.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -101,7 +104,7 @@ public class UserManageLayout extends Composite {
 		
 		txtFirstName = new Text(this, SWT.BORDER);
 		txtFirstName.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		GridData gd_txtFirstName = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		GridData gd_txtFirstName = new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1);
 		gd_txtFirstName.widthHint = 134;
 		txtFirstName.setLayoutData(gd_txtFirstName);
 		new Label(this, SWT.NONE);
@@ -116,6 +119,7 @@ public class UserManageLayout extends Composite {
 		txtLastName.setText("");
 		txtLastName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		
 		Label lblNewLabel_5 = new Label(this, SWT.NONE);
 		lblNewLabel_5.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -129,13 +133,17 @@ public class UserManageLayout extends Composite {
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		
 		txtErrorMsg = new Label(this, SWT.NONE);
-		txtErrorMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 5, 1));
+		txtErrorMsg.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		txtErrorMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 8, 1));
 		new Label(this, SWT.NONE);
 		
 		Button btnNewButton = new Button(this, SWT.NONE);
-		btnNewButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		btnNewButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -144,6 +152,26 @@ public class UserManageLayout extends Composite {
 		});
 		btnNewButton.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnNewButton.setText("บันทึกข้อมูล");
+		new Label(this, SWT.NONE);
+		
+		btnClear = new Button(this, SWT.NONE);
+		btnClear.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnClear.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				txtUser.setText("");
+				txtPassword.setText("");
+				txtFirstName.setText("");
+				txtLastName.setText("");
+				chkStatus.setSelection(false);
+				UserManageLayout.editMode = false;
+				userid = null;
+				txtErrorMsg.setText("");
+				txtTitleDesc.select(0);
+			}
+		});
+		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnClear.setText("ล้างข้อมูล");
 		new Label(this, SWT.NONE);
 		
 		btnNewButton_1 = new Button(this, SWT.NONE);
@@ -159,6 +187,7 @@ public class UserManageLayout extends Composite {
 		});
 		btnNewButton_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnNewButton_1.setText("ค้นหาผู้ใช้งาน");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
