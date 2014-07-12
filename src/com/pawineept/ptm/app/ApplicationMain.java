@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import com.pawineept.ptm.layout.BranchLayout;
+import com.pawineept.ptm.layout.BranchSearchLayout;
 import com.pawineept.ptm.layout.ChooseDBLayout;
 import com.pawineept.ptm.layout.MedicalRecordGroupLayout;
 import com.pawineept.ptm.layout.MedicalRecordLayout;
@@ -182,7 +182,7 @@ public class ApplicationMain {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				closeShell();
-				BranchLayout brl = new BranchLayout(shell, SWT.NONE);
+				BranchSearchLayout brl = new BranchSearchLayout(shell, SWT.NONE);
 //				MedicalRecordGroupLayout mrg = new MedicalRecordGroupLayout(shell, SWT.NONE);
 				composite = brl;
 				openShell();
