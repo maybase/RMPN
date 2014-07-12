@@ -191,13 +191,25 @@ public class PaymentLayout extends Composite {
 		vLastPaymentAmt.setText("-");
 		
 		Group group_2 = new Group(this, SWT.NONE);
-		group_2.setLayout(new GridLayout(5, false));
+		group_2.setLayout(new GridLayout(6, false));
 		group_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
 		group_2.setText("รายการค่าชำระปัจจุบัน");
 		
+		Label lblNewLabel = new Label(group_2, SWT.NONE);
+		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel.setText("กลุ่มประเภทชำระเงิน");
+		
+		Combo combo = new Combo(group_2, SWT.NONE);
+		combo.setItems(new String[] {"คนไข้ทั่วไป", "อัมพาต", "โยคะ", "ซื้อแพคเกต ภา", "ซื้อแพคเกตบริษัท"});
+		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
+		
 		table = new Table(group_2, SWT.BORDER | SWT.FULL_SELECTION);
 		table.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -240,13 +252,11 @@ public class PaymentLayout extends Composite {
 		        }
 			}
 		});
-		editor.grabHorizontal = true;
 		editor.setEditor(txt1, tableItem, 1);
 		
 		TableItem tableItem_1 = new TableItem(table, SWT.NONE);
 		tableItem_1.setText(new String[] {"อุปกรณ์ทางกายภาพบำบัด"});
 		TableEditor editor2 = new TableEditor(table);
-		editor2.grabHorizontal = true;
 		txt2 = new Text(table,SWT.RIGHT);
 		txt2.setText("0.00");
 		txt2.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
@@ -275,6 +285,9 @@ public class PaymentLayout extends Composite {
 			}
 		});
 		editor2.setEditor(txt2, tableItem_1, 1);
+		editor.grabHorizontal = true;
+		editor2.grabHorizontal = true;
+		new Label(group_2, SWT.NONE);
 		
 		//new Label(group_2, SWT.NONE);
 		
@@ -297,6 +310,7 @@ public class PaymentLayout extends Composite {
 		Label label_11 = new Label(group_2, SWT.NONE);
 		label_11.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_11.setText("บาท");
+		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
 		
@@ -347,6 +361,7 @@ public class PaymentLayout extends Composite {
 		Label label_13 = new Label(group_2, SWT.NONE);
 		label_13.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_13.setText("บาท");
+		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
 		
