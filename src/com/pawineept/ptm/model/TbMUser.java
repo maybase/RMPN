@@ -3,7 +3,7 @@ package com.pawineept.ptm.model;
 public class TbMUser {
 	private Integer id;
 
-	private Long prefixId;
+	private Integer prefixId;
 	private String user;
 	private String pwd;
 	private String first_name;
@@ -17,6 +17,12 @@ public class TbMUser {
 	private TbCTitle title ;
 	private String chkStatus;
 	
+	public Integer getPrefixId() {
+		return prefixId;
+	}
+	public void setPrefixId(Integer prefixId) {
+		this.prefixId = prefixId;
+	}
 	public String getChkStatus() {
 		return chkStatus;
 	}
@@ -30,12 +36,6 @@ public class TbMUser {
 		this.title = title;
 	}
 	
-	public Long getPrefixId() {
-		return prefixId;
-	}
-	public void setPrefixId(Long prefixId) {
-		this.prefixId = prefixId;
-	}
 	public String getUser() {
 		return user;
 	}
