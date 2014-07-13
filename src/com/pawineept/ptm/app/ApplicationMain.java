@@ -12,6 +12,7 @@ import com.pawineept.ptm.layout.MedicalRecordLayout;
 import com.pawineept.ptm.layout.MedicalRecordSearchLayout;
 import com.pawineept.ptm.layout.PaymentLayout;
 import com.pawineept.ptm.layout.ScheduleLayout;
+import com.pawineept.ptm.layout.TitleSearchLayout;
 import com.pawineept.ptm.layout.UserManageLayout;
 import com.pawineept.ptm.layout.UserManageSearchLayout;
 
@@ -176,6 +177,18 @@ public class ApplicationMain {
 		
 		Menu menu_5 = new Menu(mntmNewSubmenu);
 		mntmNewSubmenu.setMenu(menu_5);
+		
+		MenuItem menuItem_12 = new MenuItem(menu_5, SWT.NONE);
+		menuItem_12.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				closeShell();
+				TitleSearchLayout ts = new TitleSearchLayout(shell,SWT.NONE);
+				composite = ts;
+				openShell();
+			}
+		});
+		menuItem_12.setText("ข้อมูลคำนำหน้า");
 		
 		MenuItem menuItem_8 = new MenuItem(menu_5, SWT.NONE);
 		menuItem_8.addSelectionListener(new SelectionAdapter() {
