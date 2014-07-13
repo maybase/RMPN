@@ -171,7 +171,7 @@ public class BranchLayout extends Composite {
 			txtAddress.setText(br.getBranchAddress()==null?"":br.getBranchAddress());
 			txtPhone.setText(br.getBranchPhone()==null?"":br.getBranchPhone());
 			
-			if(br.getStatus().equals("1")){
+			if(br.getStatus() != null && br.getStatus().equals("1")){
 				//System.out.println(" checked : checked ");
 				chkStatus.setSelection(true);
 			}else{
