@@ -394,7 +394,7 @@ public class MedicalRecordLayout extends Composite {
 			TbTPatientDAO dao = new TbTPatientDAO();
 			TbCTitle title = new TbCTitle();
 			title.setTitleDescTh(txtTitleDesc.getText());
-			title.setTitleid(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
+			title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
 			
 			obj.setTitle(title);
 			obj.setFirstname(txtFirstName.getText());
