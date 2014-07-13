@@ -100,7 +100,7 @@ public class TbMUserDAO extends BaseDAO {
 	        if(rs.next()){
 	            obj2.setId(rs.getInt("id"));
 	            TbCTitle title = new TbCTitle();
-	            title.setTitleid(getLong(rs.getLong("titleid")));
+	            title.setId(rs.getInt("titleid"));
 	            title.setTitleDescTh(rs.getString("title_desc_th"));
 	            obj2.setTitle(title);
 	            obj2.setFirst_name(rs.getString("first_name"));
