@@ -236,7 +236,7 @@ public class UserManageLayout extends Composite {
 			txtFirstName.setText(us.getFirst_name()==null?"":us.getFirst_name());
 			txtLastName.setText(us.getLast_name()==null?"":us.getLast_name());
 			
-			if(us.getStatus().equals("1")){
+			if(us.getStatus() != null && us.getStatus().equals("1")){
 				//System.out.println(" checked : checked ");
 				chkStatus.setSelection(true);
 			}else{
@@ -261,9 +261,9 @@ public class UserManageLayout extends Composite {
 			TbMUserDAO dao = new TbMUserDAO();
 			TbCTitle title = new TbCTitle();
 			title.setTitleDescTh(txtTitleDesc.getText());
-			title.setTitleid(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
+			title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
 			
-			obj.setPrefixId(title.getTitleid());
+			obj.setPrefixId(title.getId());
 			obj.setUser(txtUser.getText());
 			obj.setPwd(txtPassword.getText());
 			obj.setFirst_name(txtFirstName.getText());
