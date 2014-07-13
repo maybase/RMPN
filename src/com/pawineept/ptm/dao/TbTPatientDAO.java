@@ -31,7 +31,7 @@ public class TbTPatientDAO extends BaseDAO {
 	        ps = conn.prepareStatement(sql.toString());
 	        int i=1;
 	        value(ps,i++,obj.getPatientid());
-	        value(ps,i++,obj.getTitle().getTitleid());
+	        value(ps,i++,obj.getTitle().getId());
 	        value(ps,i++,obj.getFirstname());
 	        value(ps,i++,obj.getLastname());
 	        value(ps,i++,obj.getAge());
@@ -78,7 +78,7 @@ public class TbTPatientDAO extends BaseDAO {
         try{
 	        ps = conn.prepareStatement(sql.toString());
 	        int i=1;
-	        value(ps,i++,obj.getTitle().getTitleid());
+	        value(ps,i++,obj.getTitle().getId());
 	        value(ps,i++,obj.getFirstname());
 	        value(ps,i++,obj.getLastname());
 	        value(ps,i++,obj.getNickname());
@@ -115,7 +115,7 @@ public class TbTPatientDAO extends BaseDAO {
 	        if(rs.next()){
 	            obj2.setPatientid(rs.getString("PATIENTID"));
 	            TbCTitle title = new TbCTitle();
-	            title.setTitleid(getLong(rs.getLong("TITLEID")));
+	            title.setId(rs.getInt("TITLEID"));
 	            title.setTitleDescTh(rs.getString("TITLE_DESC_TH"));
 	            obj2.setTitle(title);
 	            obj2.setFirstname(rs.getString("FIRSTNAME"));
