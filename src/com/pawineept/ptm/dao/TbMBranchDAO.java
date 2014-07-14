@@ -158,4 +158,27 @@ public class TbMBranchDAO extends BaseDAO {
 		}
 		return result;		
 	}
+	
+	public int findIdForNameTH(Connection conn, String name) throws SQLException{
+		Integer result = null;
+		String sql = "select id from TB_M_BRANCH where branchname = ?";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			value(ps,1, name);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result = rs.getInt("id");
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;
+	}
+	
 }
