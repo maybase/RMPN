@@ -140,4 +140,48 @@ public class TbMMedicalGroupDAO extends BaseDAO {
         
     }
 	
+	public List<String> findActiveList(Connection conn) throws SQLException{
+		//Method : Show List of Active Medical Group
+		List<String> result = new ArrayList<String>();
+		String sql = "select id, medical_group_name from TB_M_MEDICAL_GROUP where status = 1 order by medical_group_name asc ";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result.add(rs.getString("medical_group_name"));
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+	        DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;		
+	}
+	
+	public int findIdForNameTH(Connection conn, String name) throws SQLException{
+		Integer result = null;
+		String sql = "select id from TB_M_MEDICAL_GROUP where medical_group_name = ?";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			value(ps,1, name);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result = rs.getInt("id");
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;
+	}
+	
 }
