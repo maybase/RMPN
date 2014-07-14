@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.pawineept.ptm.layout.BranchSearchLayout;
 import com.pawineept.ptm.layout.ChooseDBLayout;
 import com.pawineept.ptm.layout.MedicalRecordGroupLayout;
+import com.pawineept.ptm.layout.MedicalRecordGroupSearchLayout;
 import com.pawineept.ptm.layout.MedicalRecordLayout;
 import com.pawineept.ptm.layout.MedicalRecordSearchLayout;
 import com.pawineept.ptm.layout.PaymentLayout;
@@ -202,6 +203,19 @@ public class ApplicationMain {
 			}
 		});
 		menuItem_8.setText("ข้อมูลสาขา");
+		
+		MenuItem menuItem_13 = new MenuItem(menu_5, SWT.NONE);
+		menuItem_13.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				closeShell();
+				MedicalRecordGroupSearchLayout mgs = new MedicalRecordGroupSearchLayout(ApplicationMain.shell, SWT.NONE);
+				composite = mgs;
+				openShell();
+				
+			}
+		});
+		menuItem_13.setText("ข้อมูลกลุ่มเวชระเบียน");
 		
 		MenuItem menuItem_11 = new MenuItem(menu_5, SWT.NONE);
 		menuItem_11.setText("ข้อมูลนักกายภาพ");
