@@ -1,5 +1,11 @@
 package com.pawineept.ptm.layout;
 
+import java.sql.Connection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
@@ -11,12 +17,26 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+
+import com.pawineept.ptm.app.ApplicationMain;
+import com.pawineept.ptm.dao.TbMBranchDAO;
+import com.pawineept.ptm.dao.TbMMedicalGroupDAO;
+import com.pawineept.ptm.model.TbMBranch;
+import com.pawineept.ptm.model.TbMMedicalGroup;
+import com.pawineept.ptm.util.DBUtil;
 
 public class MedicalRecordGroupLayout extends Composite {
-	private Text vPrefix;
-	private Text vTitle;
-	private Combo cmbStatus;
-	private Table table;
+	private Text txtGroup;
+	private Combo txtBranchDesc;
+	private Text txtPrefix;
+	private Button chkStatus;
+	private Label txtErrorMsg;
+	public static Integer medicalgroupid;
+	public static boolean editMode = false;
+	private Label lblNewLabel;
+	private Button btnClear;
 
 	/**
 	 * Create the composite.
@@ -25,83 +45,222 @@ public class MedicalRecordGroupLayout extends Composite {
 	 */
 	public MedicalRecordGroupLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(3, false));
+		setLayout(new GridLayout(6, false));
 		
-		Label label = new Label(this, SWT.NONE);
-		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-		gd_label.widthHint = 411;
-		label.setLayoutData(gd_label);
-		label.setText("จัดการกลุ่มเวชระเบียน");
-		label.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
+		lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 6, 1));
+		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
+		lblNewLabel.setText("จัดการกลุ่มเวชระเบียน");
+		
+		Label lblNewLabel_1 = new Label(this, SWT.NONE);
+		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel_1.setText("สาขา");
+		
+		txtBranchDesc = new Combo(this, SWT.NONE);
+		GridData gd_txtBranchDesc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1);
+		gd_txtBranchDesc.widthHint = 303;
+		txtBranchDesc.setLayoutData(gd_txtBranchDesc);
+		
+		Label lblNewLabel_2 = new Label(this, SWT.NONE);
+		lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel_2.setText("ชื่อกลุ่ม");
+		
+		txtGroup = new Text(this, SWT.BORDER);
+		txtGroup.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		GridData gd_txtGroup = new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1);
+		gd_txtGroup.widthHint = 385;
+		txtGroup.setLayoutData(gd_txtGroup);
+		
+		Label lblNewLabel_3 = new Label(this, SWT.NONE);
+		lblNewLabel_3.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel_3.setText("รหัสคำนำหน้า");
+		
+		txtPrefix = new Text(this, SWT.BORDER);
+		GridData gd_txtPrefix = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
+		gd_txtPrefix.widthHint = 154;
+		txtPrefix.setLayoutData(gd_txtPrefix);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		
+		Label lblNewLabel_4 = new Label(this, SWT.NONE);
+		lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel_4.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel_4.setText("สถานะการใช้งาน");
+		
+		chkStatus = new Button(this, SWT.CHECK);
+		chkStatus.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		chkStatus.setText("ใช้งาน");
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
-		
-		Label label_1 = new Label(this, SWT.NONE);
-		label_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		label_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_1.setText("ชื่อกลุ่ม");
-		
-		vTitle = new Text(this, SWT.BORDER);
-		vTitle.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		GridData gd_vTitle = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_vTitle.widthHint = 265;
-		vTitle.setLayoutData(gd_vTitle);
 		new Label(this, SWT.NONE);
 		
-		Label label_2 = new Label(this, SWT.NONE);
-		label_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		label_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_2.setText("รหัสนำหน้า");
-		
-		vPrefix = new Text(this, SWT.BORDER);
-		vPrefix.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		txtErrorMsg = new Label(this, SWT.NONE);
+		txtErrorMsg.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		GridData gd_txtErrorMsg = new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1);
+		gd_txtErrorMsg.widthHint = 396;
+		txtErrorMsg.setLayoutData(gd_txtErrorMsg);
 		new Label(this, SWT.NONE);
 		
-		Label label_3 = new Label(this, SWT.NONE);
-		label_3.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		label_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		label_3.setText("สถานะการใช้งาน");
-		
-		cmbStatus = new Combo(this, SWT.NONE);
-		cmbStatus.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		cmbStatus.setItems(new String[] {"ใช้งาน", "ไม่ใช้งาน"});
-		cmbStatus.select(0);
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
-		
-		Button btnSave = new Button(this, SWT.NONE);
-		btnSave.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		btnSave.setText("บันทึกข้อมูล");
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
+		Button btnNewButton = new Button(this, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setActionSubmit();
+			}
+		});
+		btnNewButton.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton.setText("บันทึกข้อมูล");
 		new Label(this, SWT.NONE);
 		
-		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
-		table.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		Button btnNewButton_1 = new Button(this, SWT.NONE);
+		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				txtBranchDesc.select(0);
+				txtGroup.setText("");
+				txtPrefix.setText("");
+				chkStatus.setSelection(false);
+				MedicalRecordGroupLayout.editMode = false;
+				medicalgroupid = null;
+				txtErrorMsg.setText("");
+			}
+		});
+		btnNewButton_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton_1.setText("ล้างข้อมูล");
+		new Label(this, SWT.NONE);
 		
-		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-		tableColumn.setResizable(false);
-		tableColumn.setWidth(41);
-		tableColumn.setText("#");
+		Button btnNewButton_2 = new Button(this, SWT.NONE);
+		btnNewButton_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ApplicationMain.closeShell();
+				MedicalRecordGroupSearchLayout mgs = new MedicalRecordGroupSearchLayout(ApplicationMain.shell, SWT.NONE);
+				ApplicationMain.composite = mgs;
+				ApplicationMain.openShell();
+				MedicalRecordGroupLayout.editMode = false;
+			}
+		});
+		btnNewButton_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton_2.setText("ค้นหากลุ่มเวชระเบียน");
 		
-		TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
-		tableColumn_1.setResizable(false);
-		tableColumn_1.setWidth(148);
-		tableColumn_1.setText("ตัวหนังสือนำหน้ารหัส");
-		
-		TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);
-		tableColumn_2.setWidth(312);
-		tableColumn_2.setText("ชื่อกลุ่ม");
-		
-		TableColumn tableColumn_3 = new TableColumn(table, SWT.NONE);
-		tableColumn_3.setWidth(100);
-		tableColumn_3.setText("สถานะ");
+		initBranchDesc();
+		if(editMode){
+			findEditMode();
+		}else{
+			lblNewLabel.setText("เพิ่มข้อมูลกลุ่มเวชระเบียน");
+		}
 
+	}
+	
+	private void initBranchDesc() {
+		Connection conn = null;
+		try{
+			conn = DBUtil.connect();
+			TbMBranchDAO dao = new TbMBranchDAO();
+			List<String> lst = dao.findActiveList(conn);
+			txtBranchDesc.setItems(lst.toArray(new String[lst.size()]));
+			txtBranchDesc.select(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void findEditMode() {
+		Connection conn = null;
+		try{
+			conn = DBUtil.connect();
+			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
+			TbMMedicalGroup md = new TbMMedicalGroup();
+			md.setId(medicalgroupid);
+			dao.select(conn,md);
+			lblNewLabel.setText("แก้ไขข้อมูลกลุ่มเวชระเบียน");
+			txtBranchDesc.setText(md.getBranch_name()==null?"":md.getBranch_name());
+			txtGroup.setText(md.getMedical_group_name()==null?"":md.getMedical_group_name());
+			txtPrefix.setText(md.getPrefix()==null?"":md.getPrefix());
+			
+			if(md.getStatus() != null && md.getStatus().equals("1")){
+				//System.out.println(" checked : checked ");
+				chkStatus.setSelection(true);
+			}else{
+				//System.out.println(" unchecked : unchecked ");
+				chkStatus.setSelection(false);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			errorMsg("Error: "+e.getMessage());
+		}finally{
+			DBUtil.close(conn);
+		}
+	}
+	
+	protected void setActionSubmit() {
+		Connection conn = null;
+		try {
+			conn = DBUtil.connect();
+			TbMMedicalGroup obj = new TbMMedicalGroup();
+			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
+			TbMBranchDAO branchdao = new TbMBranchDAO();
+			TbMBranch branch = new TbMBranch();
+			branch.setBranchName(txtBranchDesc.getText());
+			branch.setId(branchdao.findIdForNameTH(conn, txtBranchDesc.getText()));
+			
+			obj.setBranch_name(branch.getBranchName() == null ? "" : branch.getBranchName());
+			obj.setBranch_id(branch.getId());
+			obj.setMedical_group_name(txtGroup.getText());
+			obj.setPrefix(txtPrefix.getText());
+			
+			if(chkStatus.getSelection()){
+			     obj.setStatus("1");  // 1= Active 
+			}else{
+				 obj.setStatus("0");  // 0 = InActive
+			}
+
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+			java.util.Date date = new java.util.Date();
+			
+			if(editMode){
+				
+				obj.setId(medicalgroupid);
+				obj.setUpdated_by(ApplicationMain.USERNAME);
+				obj.setUpdated_date(dateFormat.format(date));
+				dao.update(conn, obj);
+				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+			}else{
+				
+				obj.setCreated_by(ApplicationMain.USERNAME);
+				obj.setCreated_date(dateFormat.format(date));
+				int id = dao.insert(conn, obj);
+				obj.setId(id);
+				medicalgroupid = id;
+				editMode = true;
+				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+			}
+			
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			errorMsg("Error: "+e1.getMessage());
+		}finally{
+			DBUtil.close(conn);
+		}		
+	}
+	
+	private void errorMsg(String text){
+		txtErrorMsg.setText(text);
+		txtErrorMsg.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+	}
+	private void okMsg(String text){
+		txtErrorMsg.setText(text);
+		txtErrorMsg.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 	}
 
 	@Override
