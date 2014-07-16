@@ -33,6 +33,7 @@ public class BranchLayout extends Composite {
 	private Label txtErrorMsg;
 	private Label lblNewLabel;
 	private Button btnClear;
+	public static boolean validReqFieldMode = false;
 
 	/**
 	 * Create the composite.
@@ -100,10 +101,7 @@ public class BranchLayout extends Composite {
 		
 		txtErrorMsg = new Label(this, SWT.NONE);
 		txtErrorMsg.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		txtErrorMsg.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 3, 1));
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
+		txtErrorMsg.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 6, 1));
 		new Label(this, SWT.NONE);
 		
 		Button btnSave = new Button(this, SWT.NONE);
@@ -121,13 +119,18 @@ public class BranchLayout extends Composite {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtBranchName.setText("");
-				txtAddress.setText("");
-				txtPhone.setText("");
-				chkStatus.setSelection(false);
-				BranchLayout.editMode = false;
-				branchid = null;
-				txtErrorMsg.setText("");
+				
+				if(!BranchLayout.editMode){
+					txtBranchName.setText("");
+					txtAddress.setText("");
+					txtPhone.setText("");
+					chkStatus.setSelection(false);
+					BranchLayout.editMode = false;
+					branchid = null;
+					txtErrorMsg.setText("");
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
 			}
 		});
 		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -193,38 +196,55 @@ public class BranchLayout extends Composite {
 			conn = DBUtil.connect();
 			TbMBranch obj = new TbMBranch();
 			TbMBranchDAO dao = new TbMBranchDAO();
-
-			obj.setBranchName(txtBranchName.getText());
-			obj.setBranchAddress(txtAddress.getText());
-			obj.setBranchPhone(txtPhone.getText());
 			
-			if(chkStatus.getSelection()){
-			     obj.setStatus("1");  // 1= Active 
+			//Validate Field
+			if(txtBranchName.getText().equals("") || txtBranchName.getText() ==null){
+				errorMsg("กรุณาระบุ ชื่อสาขา");
+				validReqFieldMode = true;
+			}else if(txtAddress.getText().equals("") || txtAddress.getText() ==null){
+				errorMsg("กรุณาระบุ ที่อยู่");
+				validReqFieldMode = true;
+			}else if(txtPhone.getText().equals("") || txtPhone.getText() ==null){
+				errorMsg("กรุณาระบุ โทรศัพท์");
+				validReqFieldMode = true;
 			}else{
-				 obj.setStatus("0");  // 0 = InActive
+				validReqFieldMode = false;
 			}
 
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-			java.util.Date date = new java.util.Date();
-			
-			if(editMode){
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			// No have error about valid field
+			if(!validReqFieldMode){
+				obj.setBranchName(txtBranchName.getText());
+				obj.setBranchAddress(txtAddress.getText());
+				obj.setBranchPhone(txtPhone.getText());
 				
-				obj.setId(branchid);
-				obj.setUpdated_by(ApplicationMain.USERNAME);
-				obj.setUpdated_date(dateFormat.format(date));
-				dao.update(conn, obj);
-				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
-			}else{
+				if(chkStatus.getSelection()){
+				     obj.setStatus("1");  // 1= Active 
+				}else{
+					 obj.setStatus("0");  // 0 = InActive
+				}
+	
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+				java.util.Date date = new java.util.Date();
 				
-				obj.setCreated_by(ApplicationMain.USERNAME);
-				obj.setCreated_date(dateFormat.format(date));
-				int id = dao.insert(conn, obj);
-				obj.setId(id);
-				branchid = id;
-				editMode = true;
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				if(editMode){
+					
+					obj.setId(branchid);
+					obj.setUpdated_by(ApplicationMain.USERNAME);
+					obj.setUpdated_date(dateFormat.format(date));
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					
+					obj.setCreated_by(ApplicationMain.USERNAME);
+					obj.setCreated_date(dateFormat.format(date));
+					int id = dao.insert(conn, obj);
+					obj.setId(id);
+					branchid = id;
+					editMode = false;
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				}
 			}
-			
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
