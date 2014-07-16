@@ -133,15 +133,20 @@ public class PaymentDetailTypeLayout extends Composite {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtPayTypeDesc.select(0);
-				txtPayDetailType.setText("");
-				txtTotalNum.setText("");
-				txtCost.setText("");
-				chkStatus.setSelection(false);
-				PaymentDetailTypeLayout.editMode = false;
-				validReqFieldMode = false;
-				payDetailTypeid = null;
-				txtErrorMsg.setText("");
+				
+				if(!PaymentDetailTypeLayout.editMode){
+					txtPayTypeDesc.select(0);
+					txtPayDetailType.setText("");
+					txtTotalNum.setText("");
+					txtCost.setText("");
+					chkStatus.setSelection(false);
+					PaymentDetailTypeLayout.editMode = false;
+					validReqFieldMode = false;
+					payDetailTypeid = null;
+					txtErrorMsg.setText("");
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
 			}
 		});
 		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -229,10 +234,7 @@ public class PaymentDetailTypeLayout extends Composite {
 			TbMPaymentType paytype = new TbMPaymentType();
 			
 			//Validate Field
-			if(txtPayTypeDesc.getText().equals("") || txtPayTypeDesc.getText() == null){
-				errorMsg("กรุณาระบุ ประเภทการชำระเงิน");
-				validReqFieldMode = true;
-			}else if(txtPayDetailType.getText().equals("") || txtPayDetailType.getText() == null){
+			if(txtPayDetailType.getText().equals("") || txtPayDetailType.getText() == null){
 				errorMsg("กรุณาระบุ รายละเอียดประเภทการชำระเงิน");
 				validReqFieldMode = true;
 			}else if(txtTotalNum.getText().equals("") || txtTotalNum.getText() == null){
@@ -282,7 +284,7 @@ public class PaymentDetailTypeLayout extends Composite {
 					int id = dao.insert(conn, obj);
 					obj.setId(id);
 					payDetailTypeid = id;
-					editMode = true;
+					editMode = false;
 					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
 				}
 			}
