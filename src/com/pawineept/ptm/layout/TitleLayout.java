@@ -32,7 +32,7 @@ public class TitleLayout extends Composite {
 	public static Integer titleid;
 	public static boolean editMode = false;
 	private Label lblNewLabel;
-
+	public static boolean validReqFieldMode = false;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -108,12 +108,17 @@ public class TitleLayout extends Composite {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtTitleTH.setText("");
-				txtTitleEN.setText("");
-				chkStatus.setSelection(false);
-				TitleLayout.editMode = false;
-				titleid = null;
-				txtErrorMsg.setText("");
+				
+				if(!TitleLayout.editMode){
+					txtTitleTH.setText("");
+					txtTitleEN.setText("");
+					chkStatus.setSelection(false);
+					TitleLayout.editMode = false;
+					titleid = null;
+					txtErrorMsg.setText("");
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
 			}
 		});
 		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -180,37 +185,52 @@ public class TitleLayout extends Composite {
 			TbCTitle obj = new TbCTitle();
 			TbCTitleDAO dao = new TbCTitleDAO();
 			
-			obj.setTitleDescTh(txtTitleTH.getText());
-			obj.setTitleDescEn(txtTitleEN.getText());
-			
-			if(chkStatus.getSelection()){
-			     obj.setStatus("1");  // 1= Active 
+			//Validate Require Field
+			if(txtTitleTH.getText().equals("") || txtTitleTH.getText() ==null){
+				errorMsg("กรุณาระบุ คำนำหน้า แบบไทย");
+				validReqFieldMode = true;
+			}else if(txtTitleEN.getText().equals("") || txtTitleEN.getText() ==null){
+				errorMsg("กรุณาระบุ คำนำหน้า แบบอังกฤษ");
+				validReqFieldMode = true;
 			}else{
-				 obj.setStatus("0");  // 0 = InActive
-			}
-
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-			java.util.Date date = new java.util.Date();
-			
-			if(editMode){
-				
-				obj.setId(titleid);
-				obj.setUpdated_by(ApplicationMain.USERNAME);
-				obj.setUpdated_date(dateFormat.format(date));
-				dao.update(conn, obj);
-				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
-			}else{
-				
-				obj.setCreated_by(ApplicationMain.USERNAME);
-				obj.setCreated_date(dateFormat.format(date));
-				int id = dao.insert(conn, obj);
-				obj.setId(id);
-				titleid = id;
-				editMode = true;
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				validReqFieldMode = false;
 			}
 			
-
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			// No have error about valid field
+			if(!validReqFieldMode){
+				obj.setTitleDescTh(txtTitleTH.getText());
+				obj.setTitleDescEn(txtTitleEN.getText());
+				
+				if(chkStatus.getSelection()){
+				     obj.setStatus("1");  // 1= Active 
+				}else{
+					 obj.setStatus("0");  // 0 = InActive
+				}
+	
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+				java.util.Date date = new java.util.Date();
+				
+				if(editMode){
+					
+					obj.setId(titleid);
+					obj.setUpdated_by(ApplicationMain.USERNAME);
+					obj.setUpdated_date(dateFormat.format(date));
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					
+					obj.setCreated_by(ApplicationMain.USERNAME);
+					obj.setCreated_date(dateFormat.format(date));
+					int id = dao.insert(conn, obj);
+					obj.setId(id);
+					titleid = id;
+					editMode = false;
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				}
+			
+			}
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			errorMsg("Error: "+e1.getMessage());
