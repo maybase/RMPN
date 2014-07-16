@@ -37,6 +37,7 @@ public class MedicalRecordGroupLayout extends Composite {
 	public static boolean editMode = false;
 	private Label lblNewLabel;
 	private Button btnClear;
+	public static boolean validReqFieldMode = false;
 
 	/**
 	 * Create the composite.
@@ -82,8 +83,11 @@ public class MedicalRecordGroupLayout extends Composite {
 		GridData gd_txtPrefix = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
 		gd_txtPrefix.widthHint = 154;
 		txtPrefix.setLayoutData(gd_txtPrefix);
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
+		
+		Label lblNewLabel_5 = new Label(this, SWT.NONE);
+		lblNewLabel_5.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		lblNewLabel_5.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel_5.setText("( ระบุเฉพาะกรณีต้องการเพิ่มรหัสคนไข้แบบใหม่ )");
 		
 		Label lblNewLabel_4 = new Label(this, SWT.NONE);
 		lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -121,13 +125,18 @@ public class MedicalRecordGroupLayout extends Composite {
 		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtBranchDesc.select(0);
-				txtGroup.setText("");
-				txtPrefix.setText("");
-				chkStatus.setSelection(false);
-				MedicalRecordGroupLayout.editMode = false;
-				medicalgroupid = null;
-				txtErrorMsg.setText("");
+				
+				if(!MedicalRecordGroupLayout.editMode){
+					txtBranchDesc.select(0);
+					txtGroup.setText("");
+					txtPrefix.setText("");
+					chkStatus.setSelection(false);
+					MedicalRecordGroupLayout.editMode = false;
+					medicalgroupid = null;
+					txtErrorMsg.setText("");
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
 			}
 		});
 		btnNewButton_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -210,41 +219,53 @@ public class MedicalRecordGroupLayout extends Composite {
 			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
 			TbMBranchDAO branchdao = new TbMBranchDAO();
 			TbMBranch branch = new TbMBranch();
-			branch.setBranchName(txtBranchDesc.getText());
-			branch.setId(branchdao.findIdForNameTH(conn, txtBranchDesc.getText()));
 			
-			obj.setBranch_name(branch.getBranchName() == null ? "" : branch.getBranchName());
-			obj.setBranch_id(branch.getId());
-			obj.setMedical_group_name(txtGroup.getText());
-			obj.setPrefix(txtPrefix.getText());
-			
-			if(chkStatus.getSelection()){
-			     obj.setStatus("1");  // 1= Active 
+			//Validate Require Field
+			if(txtGroup.getText().equals("") || txtGroup.getText() ==null){
+				errorMsg("กรุณาระบุ ชื่อกลุ่ม");
+				validReqFieldMode = true;
 			}else{
-				 obj.setStatus("0");  // 0 = InActive
-			}
-
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-			java.util.Date date = new java.util.Date();
-			
-			if(editMode){
-				
-				obj.setId(medicalgroupid);
-				obj.setUpdated_by(ApplicationMain.USERNAME);
-				obj.setUpdated_date(dateFormat.format(date));
-				dao.update(conn, obj);
-				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
-			}else{
-				
-				obj.setCreated_by(ApplicationMain.USERNAME);
-				obj.setCreated_date(dateFormat.format(date));
-				int id = dao.insert(conn, obj);
-				obj.setId(id);
-				medicalgroupid = id;
-				editMode = true;
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				validReqFieldMode = false;
 			}
 			
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			// No have error about valid field
+			if(!validReqFieldMode){
+				branch.setBranchName(txtBranchDesc.getText());
+				branch.setId(branchdao.findIdForNameTH(conn, txtBranchDesc.getText()));
+				
+				obj.setBranch_name(branch.getBranchName() == null ? "" : branch.getBranchName());
+				obj.setBranch_id(branch.getId());
+				obj.setMedical_group_name(txtGroup.getText());
+				obj.setPrefix(txtPrefix.getText());
+				
+				if(chkStatus.getSelection()){
+				     obj.setStatus("1");  // 1= Active 
+				}else{
+					 obj.setStatus("0");  // 0 = InActive
+				}
+	
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+				java.util.Date date = new java.util.Date();
+				
+				if(editMode){
+					
+					obj.setId(medicalgroupid);
+					obj.setUpdated_by(ApplicationMain.USERNAME);
+					obj.setUpdated_date(dateFormat.format(date));
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					
+					obj.setCreated_by(ApplicationMain.USERNAME);
+					obj.setCreated_date(dateFormat.format(date));
+					int id = dao.insert(conn, obj);
+					obj.setId(id);
+					medicalgroupid = id;
+					editMode = false;
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				}
+			}
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
