@@ -41,6 +41,8 @@ public class UserManageLayout extends Composite {
 	private Label lblNewLabel;
 	private Button btnNewButton_1;
 	private Button btnClear;
+	public static boolean validReqFieldMode = false;
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -159,15 +161,21 @@ public class UserManageLayout extends Composite {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtUser.setText("");
-				txtPassword.setText("");
-				txtFirstName.setText("");
-				txtLastName.setText("");
-				chkStatus.setSelection(false);
-				UserManageLayout.editMode = false;
-				userid = null;
-				txtErrorMsg.setText("");
-				txtTitleDesc.select(0);
+				
+				if(!UserManageLayout.editMode){
+					txtUser.setText("");
+					txtPassword.setText("");
+					txtFirstName.setText("");
+					txtLastName.setText("");
+					chkStatus.setSelection(false);
+					UserManageLayout.editMode = false;
+					userid = null;
+					txtErrorMsg.setText("");
+					txtTitleDesc.select(0);
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
+					
 			}
 		});
 		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -260,44 +268,66 @@ public class UserManageLayout extends Composite {
 			TbCTitleDAO titleDAO = new TbCTitleDAO();
 			TbMUserDAO dao = new TbMUserDAO();
 			TbCTitle title = new TbCTitle();
-			title.setTitleDescTh(txtTitleDesc.getText());
-			title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
 			
-			obj.setPrefixId(title.getId());
-			obj.setUser(txtUser.getText());
-			obj.setPwd(txtPassword.getText());
-			obj.setFirst_name(txtFirstName.getText());
-			obj.setLast_name(txtLastName.getText());
-			obj.setLast_active(null); // !!! Change Login Again after finish logic login => when login then it will auto update "date" into this field
-			
-			if(chkStatus.getSelection()){
-			     obj.setStatus("1");  // 1= Active 
+			//Validate Require Field
+			if(txtUser.getText().equals("") || txtUser.getText() ==null){
+				errorMsg("กรุณาระบุ User");
+				validReqFieldMode = true;
+			}else if(txtPassword.getText().equals("") || txtPassword.getText() ==null){
+				errorMsg("กรุณาระบุ Password");
+				validReqFieldMode = true;
+			}else if(txtFirstName.getText().equals("") || txtFirstName.getText() ==null){
+				errorMsg("กรุณาระบุ ชื่อ");
+				validReqFieldMode = true;
+			}else if(txtLastName.getText().equals("") || txtLastName.getText() ==null){
+				errorMsg("กรุณาระบุ นามสกุล");
+				validReqFieldMode = true;
 			}else{
-				 obj.setStatus("0");  // 0 = InActive
-			}
-
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-			java.util.Date date = new java.util.Date();
-			
-			if(editMode){
-				
-				obj.setId(userid);
-				obj.setUpdated_by(ApplicationMain.USERNAME);
-				obj.setUpdated_date(dateFormat.format(date));
-				dao.update(conn, obj);
-				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
-			}else{
-				
-				obj.setCreated_by(ApplicationMain.USERNAME);
-				obj.setCreated_date(dateFormat.format(date));
-				int id = dao.insert(conn, obj);
-				obj.setId(id);
-				userid = id;
-				editMode = true;
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				validReqFieldMode = false;
 			}
 			
-
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			// No have error about valid field
+			if(!validReqFieldMode){
+				title.setTitleDescTh(txtTitleDesc.getText());
+				title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
+				
+				obj.setPrefixId(title.getId());
+				obj.setUser(txtUser.getText());
+				obj.setPwd(txtPassword.getText());
+				obj.setFirst_name(txtFirstName.getText());
+				obj.setLast_name(txtLastName.getText());
+				obj.setLast_active(null); // !!! Change Login Again after finish logic login => when login then it will auto update "date" into this field
+				
+				if(chkStatus.getSelection()){
+				     obj.setStatus("1");  // 1= Active 
+				}else{
+					 obj.setStatus("0");  // 0 = InActive
+				}
+	
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+				java.util.Date date = new java.util.Date();
+				
+				if(editMode){
+					
+					obj.setId(userid);
+					obj.setUpdated_by(ApplicationMain.USERNAME);
+					obj.setUpdated_date(dateFormat.format(date));
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					
+					obj.setCreated_by(ApplicationMain.USERNAME);
+					obj.setCreated_date(dateFormat.format(date));
+					int id = dao.insert(conn, obj);
+					obj.setId(id);
+					userid = id;
+					editMode = false;
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				}
+			
+			}
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			errorMsg("Error: "+e1.getMessage());
