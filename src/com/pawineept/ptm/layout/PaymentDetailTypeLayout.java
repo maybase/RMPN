@@ -230,7 +230,7 @@ public class PaymentDetailTypeLayout extends Composite {
 			
 			//Validate Field
 			if(txtPayTypeDesc.getText().equals("") || txtPayTypeDesc.getText() == null){
-				errorMsg("กรุณาระบ ประเภทการชำระเงิน");
+				errorMsg("กรุณาระบุ ประเภทการชำระเงิน");
 				validReqFieldMode = true;
 			}else if(txtPayDetailType.getText().equals("") || txtPayDetailType.getText() == null){
 				errorMsg("กรุณาระบุ รายละเอียดประเภทการชำระเงิน");
