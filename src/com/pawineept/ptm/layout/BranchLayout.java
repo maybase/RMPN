@@ -34,6 +34,7 @@ public class BranchLayout extends Composite {
 	private Label lblNewLabel;
 	private Button btnClear;
 	public static boolean validReqFieldMode = false;
+	private Label lblXxxxxxxxxx;
 
 	/**
 	 * Create the composite.
@@ -83,7 +84,10 @@ public class BranchLayout extends Composite {
 		GridData gd_txtPhone = new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1);
 		gd_txtPhone.widthHint = 292;
 		txtPhone.setLayoutData(gd_txtPhone);
-		new Label(this, SWT.NONE);
+		
+		lblXxxxxxxxxx = new Label(this, SWT.NONE);
+		lblXxxxxxxxxx.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblXxxxxxxxxx.setText("(รูปแบบ XX(X)-XXX-XXXX )");
 		
 		Label lblNewLabel_2 = new Label(this, SWT.NONE);
 		lblNewLabel_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
