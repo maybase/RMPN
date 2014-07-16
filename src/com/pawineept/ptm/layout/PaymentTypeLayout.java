@@ -38,6 +38,7 @@ public class PaymentTypeLayout extends Composite {
 	public static Integer paymenttypeid;
 	public static boolean editMode = false;
 	private Label lblNewLabel;
+	public static boolean validReqFieldMode = false;
 
 	/**
 	 * Create the composite.
@@ -127,14 +128,19 @@ public class PaymentTypeLayout extends Composite {
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtMedGroupDesc.select(0);
-				txtPayType.setText("");
-				btnOwnerOffice.setSelection(false);
-				btnOwnerPa.setSelection(false);
-				chkStatus.setSelection(false);
-				txtErrorMsg.setText("");
-				PaymentTypeLayout.editMode = false;
-				paymenttypeid = null;
+				
+				if(!PaymentTypeLayout.editMode){
+					txtMedGroupDesc.select(0);
+					txtPayType.setText("");
+					btnOwnerOffice.setSelection(false);
+					btnOwnerPa.setSelection(false);
+					chkStatus.setSelection(false);
+					txtErrorMsg.setText("");
+					PaymentTypeLayout.editMode = false;
+					paymenttypeid = null;
+				}else{
+					errorMsg("ไม่สามารถล้างข้อมูล สำหรับโหมดแก้ไขข้อมูลได้");
+				}
 			}
 		});
 		btnClear.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -227,47 +233,64 @@ public class PaymentTypeLayout extends Composite {
 			TbMPaymentTypeDAO dao = new TbMPaymentTypeDAO();
 			TbMMedicalGroupDAO medDao = new TbMMedicalGroupDAO();
 			TbMMedicalGroup med = new TbMMedicalGroup();
-			med.setMedical_group_name(txtMedGroupDesc.getText());
-			med.setId(medDao.findIdForNameTH(conn, txtMedGroupDesc.getText()));
 			
-			obj.setMedical_group_id(med.getId());
-			obj.setPay_type_name(txtPayType.getText());
-			
-			if(btnOwnerPa.getSelection()){
-				// Owner Pa
-				obj.setOwner("1");
+			//Validate Require Field
+			if(txtPayType.getText().equals("") || txtPayType.getText() ==null){
+				errorMsg("กรุณาระบุ ประเภทของการชำระเงิน");
+				validReqFieldMode = true;
+			}else if(!btnOwnerPa.getSelection() && !btnOwnerOffice.getSelection()){
+				errorMsg("กรุณาระบุ ผู้เป็นเจ้าของ");
+				validReqFieldMode = true;
 			}else{
-				// Owner Office
-				obj.setOwner("0");
+				validReqFieldMode = false;
 			}
 			
-			if(chkStatus.getSelection()){
-			     obj.setStatus("1");  // 1= Active 
-			}else{
-				 obj.setStatus("0");  // 0 = InActive
-			}
-
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
-			java.util.Date date = new java.util.Date();
-			
-			if(editMode){
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			System.out.println("btnOwnerPa.getSelection() : "+btnOwnerPa.getSelection());
+			System.out.println("btnOwnerOffice.getSelection() : "+btnOwnerOffice.getSelection());
+			// No have error about valid field
+			if(!validReqFieldMode){
+				med.setMedical_group_name(txtMedGroupDesc.getText());
+				med.setId(medDao.findIdForNameTH(conn, txtMedGroupDesc.getText()));
 				
-				obj.setId(paymenttypeid);
-				obj.setUpdated_by(ApplicationMain.USERNAME);
-				obj.setUpdated_date(dateFormat.format(date));
-				dao.update(conn, obj);
-				okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
-			}else{
+				obj.setMedical_group_id(med.getId());
+				obj.setPay_type_name(txtPayType.getText());
 				
-				obj.setCreated_by(ApplicationMain.USERNAME);
-				obj.setCreated_date(dateFormat.format(date));
-				int id = dao.insert(conn, obj);
-				obj.setId(id);
-				paymenttypeid = id;
-				editMode = true;
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				if(btnOwnerPa.getSelection()){
+					// Owner Pa
+					obj.setOwner("1");
+				}else{
+					// Owner Office
+					obj.setOwner("0");
+				}
+				
+				if(chkStatus.getSelection()){
+				     obj.setStatus("1");  // 1= Active 
+				}else{
+					 obj.setStatus("0");  // 0 = InActive
+				}
+	
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+				java.util.Date date = new java.util.Date();
+				
+				if(editMode){
+					
+					obj.setId(paymenttypeid);
+					obj.setUpdated_by(ApplicationMain.USERNAME);
+					obj.setUpdated_date(dateFormat.format(date));
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					
+					obj.setCreated_by(ApplicationMain.USERNAME);
+					obj.setCreated_date(dateFormat.format(date));
+					int id = dao.insert(conn, obj);
+					obj.setId(id);
+					paymenttypeid = id;
+					editMode = false;
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+				}
 			}
-			
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
