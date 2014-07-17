@@ -1,5 +1,8 @@
 package com.pawineept.ptm.layout;
 
+import java.sql.Connection;
+import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
@@ -10,6 +13,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+
+import com.pawineept.ptm.app.ApplicationMain;
+import com.pawineept.ptm.dao.TbMPositionDAO;
+import com.pawineept.ptm.model.TbMPosition;
+import com.pawineept.ptm.util.DBUtil;
+
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class PositionSearchLayout extends Composite {
 	private Text txtSearch;
@@ -40,15 +54,47 @@ public class PositionSearchLayout extends Composite {
 		label_1.setText("ค้นหา ตำแหน่งงาน");
 		
 		txtSearch = new Text(this, SWT.BORDER);
+		txtSearch.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				super.keyReleased(e);
+				if(txtSearch.getText().trim().length()>0)
+					searchUserRecord();
+				else
+					table.removeAll();
+			}
+		});
 		txtSearch.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(this, SWT.NONE);
 		
 		btnAdd = new Button(this, SWT.NONE);
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ApplicationMain.closeShell();
+		        PositionLayout us = new PositionLayout(ApplicationMain.shell,SWT.NONE);
+				ApplicationMain.composite = us;
+				ApplicationMain.openShell();
+				PositionLayout.editMode = false;
+			}
+		});
 		btnAdd.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnAdd.setText("เพิ่มตำแหน่งงาน");
 		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String positionid = e.item.getData().toString();
+				System.out.println("edit positionid:"+positionid);
+				ApplicationMain.closeShell();
+				PositionLayout.editMode = true;
+				PositionLayout.positionid = Integer.parseInt(positionid);
+				ApplicationMain.composite = new PositionLayout(ApplicationMain.shell, SWT.NULL);
+				ApplicationMain.openShell();
+			}
+		});
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -65,6 +111,28 @@ public class PositionSearchLayout extends Composite {
 		tableColumn_2.setWidth(123);
 		tableColumn_2.setText("สถานะตำแหน่ง");
 
+	}
+	
+	protected void searchUserRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMPositionDAO dao = new TbMPositionDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMPosition> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMPosition obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getPosition_name(), obj.getRemark(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
 	}
 
 	@Override
