@@ -14,6 +14,8 @@ import com.pawineept.ptm.layout.MedicalRecordSearchLayout;
 import com.pawineept.ptm.layout.PaymentDetailTypeSearchLayout;
 import com.pawineept.ptm.layout.PaymentLayout;
 import com.pawineept.ptm.layout.PaymentTypeSearchLayout;
+import com.pawineept.ptm.layout.PositionLayout;
+import com.pawineept.ptm.layout.PositionSearchLayout;
 import com.pawineept.ptm.layout.ScheduleLayout;
 import com.pawineept.ptm.layout.TitleSearchLayout;
 import com.pawineept.ptm.layout.UserManageLayout;
@@ -242,6 +244,18 @@ public class ApplicationMain {
 			}
 		});
 		menuItem_15.setText("ข้อมูลรายละเอียดประเภทการชำระเงิน");
+		
+		MenuItem menuItem_16 = new MenuItem(menu_5, SWT.NONE);
+		menuItem_16.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				closeShell();
+				PositionSearchLayout ps = new PositionSearchLayout(shell, SWT.NONE);
+				composite = ps;
+				openShell();
+			}
+		});
+		menuItem_16.setText("ข้อมูลตำแหน่งงาน");
 		
 		MenuItem menuItem_11 = new MenuItem(menu_5, SWT.NONE);
 		menuItem_11.setText("ข้อมูลนักกายภาพ");
