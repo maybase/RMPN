@@ -17,6 +17,8 @@ import com.pawineept.ptm.layout.PaymentTypeSearchLayout;
 import com.pawineept.ptm.layout.PositionLayout;
 import com.pawineept.ptm.layout.PositionSearchLayout;
 import com.pawineept.ptm.layout.ScheduleLayout;
+import com.pawineept.ptm.layout.StaffLayout;
+import com.pawineept.ptm.layout.StaffSearchLayout;
 import com.pawineept.ptm.layout.TitleSearchLayout;
 import com.pawineept.ptm.layout.UserManageLayout;
 import com.pawineept.ptm.layout.UserManageSearchLayout;
@@ -258,7 +260,16 @@ public class ApplicationMain {
 		menuItem_16.setText("ข้อมูลตำแหน่งงาน");
 		
 		MenuItem menuItem_11 = new MenuItem(menu_5, SWT.NONE);
-		menuItem_11.setText("ข้อมูลนักกายภาพ");
+		menuItem_11.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				closeShell();
+			    StaffSearchLayout umls = new StaffSearchLayout(shell, SWT.NONE);
+				composite = umls;
+				openShell();
+			}
+		});
+		menuItem_11.setText("ข้อมูลพนักงาน");
 		
 		MenuItem mntmNewItem = new MenuItem(menu_5, SWT.NONE);
 		mntmNewItem.addSelectionListener(new SelectionAdapter() {
