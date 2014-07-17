@@ -133,4 +133,48 @@ public class TbMPositionDAO extends BaseDAO {
         
     }
 	
+	public List<String> findActiveList(Connection conn) throws SQLException{
+		//Method : Show List of Active Position
+		List<String> result = new ArrayList<String>();
+		String sql = "select id, POSTION_NAME from TB_M_POSITION where status = 1 order by POSTION_NAME asc ";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result.add(rs.getString("POSTION_NAME"));
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+	        DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;		
+	}
+	
+	public int findIdForNameTH(Connection conn, String name) throws SQLException{
+		Integer result = null;
+		String sql = "select id from TB_M_POSITION where POSTION_NAME = ?";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(sql);
+			value(ps,1, name);
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	result = rs.getInt("id");
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return result;
+	}
+	
 }
