@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.pawineept.ptm.model.TbCTitle;
 import com.pawineept.ptm.model.TbMPosition;
-import com.pawineept.ptm.model.TbMUser;
 import com.pawineept.ptm.model.TbTStaff;
 import com.pawineept.ptm.util.DBUtil;
 
@@ -57,13 +56,17 @@ public class TbTStaffDAO extends BaseDAO {
 		ResultSet rs = null;
 		sql.append("select ts.id, ts.FIRST_NAME, ts.LAST_NAME, ts.ADDRESS, ts.PHONE, ct.TITLE_DESC_TH, po.POSTION_NAME  ");
 		sql.append(", case when ts.jobtype = 1 then 'ประจำ' else 'ขั่วคราว' end as jobtypename ");
-		sql.append(", case when ts.status = 1 then 'ปกติ' else 'ลาออก' end as statusname  from TB_T_STAFF ts, TB_C_TITLE ct, TB_M_POSITION po ");
-		sql.append("where ts.TITLE_ID = ct.titleid and ts.position_id = po.id and 1=2 ");
+		sql.append(", case when ts.status = 1 then 'ปกติ' else 'ลาออก' end as statusname  ");
+		sql.append(" from TB_T_STAFF ts ");
+		sql.append("left outer join TB_C_TITLE ct on ts.TITLE_ID = ct.titleid ");
+		sql.append("left outer join TB_M_POSITION po on ts.position_id = po.id ");
+		
 		for(int i=0; i< name.length; i++){
-			sql.append("OR (ts.FIRST_NAME like ? OR ts.LAST_NAME like ? OR po.POSTION_NAME like ? )");
+			sql.append(" where ts.FIRST_NAME like ? OR ts.LAST_NAME like ? OR po.POSTION_NAME like ? ");
 		}
-		sql.append("ORDER BY 1,2 ");
+		sql.append("ORDER BY FIRST_NAME,LAST_NAME ");
 		try{
+			System.out.println(sql.toString());
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
 			for(int i=0; i< name.length; i++){
