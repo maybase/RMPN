@@ -38,7 +38,7 @@ public class UserManageSearchLayout extends Composite {
 	 */
 	public UserManageSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(8, false));
+		setLayout(new GridLayout(9, false));
 		
 		Label label = new Label(this, SWT.NONE);
 		GridData gd_label = new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1);
@@ -46,6 +46,7 @@ public class UserManageSearchLayout extends Composite {
 		label.setLayoutData(gd_label);
 		label.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		label.setText("ค้นหาข้อมูลผู้ใช้งาน");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -89,6 +90,16 @@ public class UserManageSearchLayout extends Composite {
 			}
 		});
 		btnNewButton.setText("เพิ่มผู้ใช้งาน");
+		
+		Button btnNewButton_1 = new Button(this, SWT.NONE);
+		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllUserRecord();
+			}
+		});
+		btnNewButton_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton_1.setText("แสดงผู้ใช้งานทั้งหมด");
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -107,24 +118,28 @@ public class UserManageSearchLayout extends Composite {
 				ApplicationMain.openShell();
 			}
 		});
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1));
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 9, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
+		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		tableColumn.setWidth(100);
+		tableColumn.setText("คำนำหน้า");
+		
 		TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
-		tableColumn_1.setWidth(200);
+		tableColumn_1.setWidth(234);
 		tableColumn_1.setText("ชื่อ - นามสกุล");
 		
 		TableColumn tblclmnUser = new TableColumn(table, SWT.NONE);
-		tblclmnUser.setWidth(100);
+		tblclmnUser.setWidth(156);
 		tblclmnUser.setText("User");
 		
 		TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);
-		tableColumn_2.setWidth(100);
+		tableColumn_2.setWidth(152);
 		tableColumn_2.setText("วันที่ใช้ล่าสุด");
 		
 		TableColumn tableColumn_3 = new TableColumn(table, SWT.NONE);
-		tableColumn_3.setWidth(100);
+		tableColumn_3.setWidth(146);
 		tableColumn_3.setText("สถานะผู้ใช้งาน");
 
 	}
@@ -140,7 +155,29 @@ public class UserManageSearchLayout extends Composite {
 			for(int i=0;i<lst.size();i++){
 				TbMUser obj = lst.get(i);
 				TableItem tableItem = new TableItem(table, SWT.NONE);
-				tableItem.setText(new String[] {obj.getFirst_name()+" "+obj.getLast_name(),obj.getUser(), obj.getLast_active(), obj.getStatus(), ""});
+				tableItem.setText(new String[] {obj.getTitle().getTitleDescTh(),obj.getFirst_name()+" "+obj.getLast_name(),obj.getUser(), obj.getLast_active(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllUserRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMUserDAO dao = new TbMUserDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMUser> lst = dao.findAllList(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMUser obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getTitle().getTitleDescTh(),obj.getFirst_name()+" "+obj.getLast_name(),obj.getUser(), obj.getLast_active(), obj.getStatus(), ""});
 				tableItem.setData(obj.getId().toString());
 			}
 		}catch(Exception e){
