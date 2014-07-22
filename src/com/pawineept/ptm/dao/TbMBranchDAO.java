@@ -43,16 +43,16 @@ public class TbMBranchDAO extends BaseDAO {
     }
 	
 	public List<TbMBranch> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Branch
+		//Method : Mode Search All Branch with condition for search
 		List<TbMBranch> lst = new ArrayList<TbMBranch>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select id , BRANCHNAME, BRANCHADDRESS, BRANCHPHONE , case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_BRANCH where 1=2 ");
+		sql.append("select id , BRANCHNAME, BRANCHADDRESS, BRANCHPHONE , case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_BRANCH where ");
 		for(int i=0; i< name.length; i++){
-			sql.append("OR BRANCHNAME like ? OR BRANCHADDRESS like ? ");
+			sql.append(" BRANCHNAME like ? OR BRANCHADDRESS like ? ");
 		}
-		sql.append("ORDER BY 1,2 ");
+		sql.append("ORDER BY BRANCHNAME, BRANCHADDRESS ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -179,6 +179,36 @@ public class TbMBranchDAO extends BaseDAO {
 	        DBUtil.close(ps);
 		}
 		return result;
+	}
+	
+	public List<TbMBranch> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Branch
+		List<TbMBranch> lst = new ArrayList<TbMBranch>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select id , BRANCHNAME, BRANCHADDRESS, BRANCHPHONE , case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_BRANCH ");
+		sql.append("ORDER BY BRANCHNAME, BRANCHADDRESS ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMBranch obj2 = new TbMBranch();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setBranchName(rs.getString("BRANCHNAME"));
+	            obj2.setBranchAddress(rs.getString("BRANCHADDRESS"));
+	            obj2.setBranchPhone(rs.getString("BRANCHPHONE"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
 	}
 	
 }
