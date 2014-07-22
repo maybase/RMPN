@@ -48,16 +48,20 @@ public class TbMUserDAO extends BaseDAO {
     }
 	
 	public List<TbMUser> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All User
+		//Method : Mode Search All User with condition for search
 		List<TbMUser> lst = new ArrayList<TbMUser>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select id , first_name, last_name , user , last_active , case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from tb_m_t_user where 1=2 ");
+		sql.append("select tu.id , tu.first_name, tu.last_name , tu.user , tu.last_active , ct.TITLE_DESC_TH, ");
+		sql.append("case when tu.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  ");
+		sql.append("from tb_m_t_user tu ");
+		sql.append("left outer join TB_C_TITLE ct on tu.prefix_ID = ct.titleid ");
+		
 		for(int i=0; i< name.length; i++){
-			sql.append("OR first_name like ? OR last_name like ? OR user like ? ");
+			sql.append("where tu.first_name like ? OR tu.last_name like ? OR tu.user like ? ");
 		}
-		sql.append("ORDER BY 1,2 ");
+		sql.append("ORDER BY tu.first_name,tu.last_name ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -75,6 +79,8 @@ public class TbMUserDAO extends BaseDAO {
 	            obj2.setUser(rs.getString("user"));
 	            obj2.setLast_active(rs.getString("last_active"));
 	            obj2.setStatus(rs.getString("statusname"));
+	            obj2.setTitle(new TbCTitle());
+	            obj2.getTitle().setTitleDescTh(rs.getString("TITLE_DESC_TH"));
 	            lst.add(obj2);
 	        }
 		}catch(SQLException e){
@@ -154,4 +160,41 @@ public class TbMUserDAO extends BaseDAO {
         }
         
     }
+	
+	public List<TbMUser> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All User 
+		List<TbMUser> lst = new ArrayList<TbMUser>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select tu.id , tu.first_name, tu.last_name , tu.user , tu.last_active , ct.TITLE_DESC_TH, ");
+		sql.append("case when tu.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  ");
+		sql.append("from tb_m_t_user tu ");
+		sql.append("left outer join TB_C_TITLE ct on tu.prefix_ID = ct.titleid ");
+		sql.append("ORDER BY tu.first_name,tu.last_name ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMUser obj2 = new TbMUser();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setFirst_name(rs.getString("first_name"));
+	            obj2.setLast_name(rs.getString("last_name"));
+	            obj2.setUser(rs.getString("user"));
+	            obj2.setLast_active(rs.getString("last_active"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            obj2.setTitle(new TbCTitle());
+	            obj2.getTitle().setTitleDescTh(rs.getString("TITLE_DESC_TH"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
+	}
+	
 }
