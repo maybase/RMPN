@@ -138,16 +138,16 @@ public class TbCTitleDAO extends BaseDAO {
     }
 	
 	public List<TbCTitle> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Title
+		//Method : Mode Search All Title with condition for search
 		List<TbCTitle> lst = new ArrayList<TbCTitle>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select titleid, title_desc_th, title_desc_en, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from tb_c_title where 1=2 ");
+		sql.append("select titleid, title_desc_th, title_desc_en, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from tb_c_title  ");
 		for(int i=0; i< name.length; i++){
-			sql.append("OR title_desc_th like ? OR title_desc_en like ? ");
+			sql.append("where title_desc_th like ? OR title_desc_en like ? ");
 		}
-		sql.append("ORDER BY 2,3 ");
+		sql.append("ORDER BY title_desc_th ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -173,5 +173,35 @@ public class TbCTitleDAO extends BaseDAO {
 		}
 		return lst;		
 	}
+	
+	public List<TbCTitle> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Title 
+		List<TbCTitle> lst = new ArrayList<TbCTitle>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select titleid, title_desc_th, title_desc_en, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from tb_c_title ");
+		sql.append("ORDER BY title_desc_th ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbCTitle obj2 = new TbCTitle();
+	        	obj2.setId(rs.getInt("titleid"));
+	            obj2.setTitleDescTh(rs.getString("title_desc_th"));
+	            obj2.setTitleDescEn(rs.getString("title_desc_en"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
+	}
+	
 	
 }
