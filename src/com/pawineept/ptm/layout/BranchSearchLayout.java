@@ -60,7 +60,7 @@ public class BranchSearchLayout extends Composite {
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				if(txtSearch.getText().trim().length()>0)
-					searchUserRecord();
+					searchBranchRecord();
 				else
 					table.removeAll();
 			}
@@ -87,7 +87,7 @@ public class BranchSearchLayout extends Composite {
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				searchAllUserRecord();
+				searchAllBranchRecord();
 			}
 		});
 		btnNewButton.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -130,7 +130,7 @@ public class BranchSearchLayout extends Composite {
 
 	}
 	
-	protected void searchUserRecord() {		
+	protected void searchBranchRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
@@ -152,7 +152,7 @@ public class BranchSearchLayout extends Composite {
 		
 	}
 	
-	protected void searchAllUserRecord() {		
+	protected void searchAllBranchRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
