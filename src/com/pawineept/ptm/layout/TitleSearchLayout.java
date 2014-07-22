@@ -37,12 +37,13 @@ public class TitleSearchLayout extends Composite {
 	 */
 	public TitleSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(6, false));
+		setLayout(new GridLayout(7, false));
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("ค้นหาข้อมูลคำนำหน้า");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -60,7 +61,7 @@ public class TitleSearchLayout extends Composite {
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				if(txtSearch.getText().trim().length()>0)
-					searchUserRecord();
+					searchTitleRecord();
 				else
 					table.removeAll();
 			}
@@ -88,6 +89,16 @@ public class TitleSearchLayout extends Composite {
 		btnSearch.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnSearch.setText("เพิ่มคำนำหน้า");
 		
+		Button button = new Button(this, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllTitleRecord();
+			}
+		});
+		button.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		button.setText("แสดงคำนำหน้าทั้งหมด");
+		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -103,8 +114,8 @@ public class TitleSearchLayout extends Composite {
 			}
 		});
 		table.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
-		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
-		gd_table.widthHint = 706;
+		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 7, 1);
+		gd_table.widthHint = 796;
 		table.setLayoutData(gd_table);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -118,18 +129,40 @@ public class TitleSearchLayout extends Composite {
 		tableColumn_1.setText("คำนำหน้าแบบอังกฤษ");
 		
 		TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);
-		tableColumn_2.setWidth(128);
+		tableColumn_2.setWidth(188);
 		tableColumn_2.setText("สถานะคำนำหน้า");
 
 	}
 	
-	protected void searchUserRecord() {		
+	protected void searchTitleRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
 			TbCTitleDAO dao = new TbCTitleDAO();
 			String name[] = txtSearch.getText().split(" ");
 			List<TbCTitle> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbCTitle obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getTitleDescTh(), obj.getTitleDescEn(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllTitleRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbCTitleDAO dao = new TbCTitleDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbCTitle> lst = dao.findAllList(conn,name);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbCTitle obj = lst.get(i);
