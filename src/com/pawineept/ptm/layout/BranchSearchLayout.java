@@ -37,12 +37,13 @@ public class BranchSearchLayout extends Composite {
 	 */
 	public BranchSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(5, false));
+		setLayout(new GridLayout(6, false));
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("ค้นหาข้อมูลสาขา");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
@@ -82,6 +83,16 @@ public class BranchSearchLayout extends Composite {
 		btnAddBranch.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnAddBranch.setText("เพิ่มสาขา");
 		
+		Button btnNewButton = new Button(this, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllUserRecord();
+			}
+		});
+		btnNewButton.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		btnNewButton.setText("แสดงสาขาทั้งหมด");
+		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -95,7 +106,7 @@ public class BranchSearchLayout extends Composite {
 				ApplicationMain.openShell();
 			}
 		});
-		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
+		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
 		gd_table.widthHint = 628;
 		table.setLayoutData(gd_table);
 		table.setHeaderVisible(true);
@@ -126,6 +137,28 @@ public class BranchSearchLayout extends Composite {
 			TbMBranchDAO dao = new TbMBranchDAO();
 			String name[] = txtSearch.getText().split(" ");
 			List<TbMBranch> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMBranch obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getBranchName(), obj.getBranchAddress(), obj.getBranchPhone(), obj.getStatus()});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllUserRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMBranchDAO dao = new TbMBranchDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMBranch> lst = dao.findAllList(conn,name);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMBranch obj = lst.get(i);
