@@ -38,12 +38,13 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 	 */
 	public MedicalRecordGroupSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(5, false));
+		setLayout(new GridLayout(6, false));
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("ค้นหาข้อมูลกลุ่มเวชระเบียน");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
 		Label lblNewLabel_1 = new Label(this, SWT.NONE);
@@ -57,7 +58,7 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				if(txtSearch.getText().trim().length()>0)
-					searchUserRecord();
+					searchMedicalGroupRecord();
 				else
 					table.removeAll();
 			}
@@ -80,6 +81,16 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 		btnAdd.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnAdd.setText("เพิ่มข้อมูลกลุ่ม");
 		
+		Button button = new Button(this, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllMedicalGroupRecord();
+			}
+		});
+		button.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		button.setText("แสดงกลุ่มเวชระเบียนทั้งหมด");
+		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -93,7 +104,7 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 				ApplicationMain.openShell();
 			}
 		});
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -115,13 +126,35 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 
 	}
 	
-	protected void searchUserRecord() {		
+	protected void searchMedicalGroupRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
 			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
 			String name[] = txtSearch.getText().split(" ");
 			List<TbMMedicalGroup> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMMedicalGroup obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getBranch_name(), obj.getMedical_group_name(), obj.getPrefix(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllMedicalGroupRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMMedicalGroup> lst = dao.findAllList(conn,name);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMMedicalGroup obj = lst.get(i);
