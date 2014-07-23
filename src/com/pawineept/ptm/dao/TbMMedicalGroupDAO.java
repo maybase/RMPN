@@ -46,16 +46,20 @@ public class TbMMedicalGroupDAO extends BaseDAO {
     }
 	
 	public List<TbMMedicalGroup> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Medical Group
+		//Method : Mode Search All Medical Group with condition for search
 		List<TbMMedicalGroup> lst = new ArrayList<TbMMedicalGroup>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select mg.id , mb.BRANCHNAME, mg.MEDICAL_GROUP_NAME , mg.prefix , case when mg.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname from TB_M_MEDICAL_GROUP mg , TB_M_BRANCH mb where mg.branch_id = mb.id ");
+		sql.append("select mg.id , mb.BRANCHNAME, mg.MEDICAL_GROUP_NAME , mg.prefix , ");
+		sql.append("case when mg.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
+		sql.append("from TB_M_MEDICAL_GROUP mg  ");
+		sql.append("left outer join TB_M_BRANCH mb on mg.branch_id = mb.id  ");
+		
 		for(int i=0; i< name.length; i++){
-			sql.append("and ( mg.MEDICAL_GROUP_NAME like ? OR mb.BRANCHNAME like ? ) ");
+			sql.append("where mg.MEDICAL_GROUP_NAME like ? OR mb.BRANCHNAME like ? ");
 		}
-		sql.append("ORDER BY 2,3 ");
+		sql.append("ORDER BY mb.BRANCHNAME, mg.MEDICAL_GROUP_NAME ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -85,7 +89,7 @@ public class TbMMedicalGroupDAO extends BaseDAO {
 	
 	public void select(Connection conn,TbMMedicalGroup obj2) throws SQLException{
 		//Method : Mode Update and Show Detail Medical Group
-        String sql = "select mg.*, mb.id as mid ,mb.branchname from TB_M_MEDICAL_GROUP mg , TB_M_BRANCH mb where mg.branch_id = mb.id and mg.id = ? ";
+        String sql = "select mg.*, mb.id as mid ,mb.branchname from TB_M_MEDICAL_GROUP mg left outer join TB_M_BRANCH mb on mg.branch_id = mb.id where mg.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -183,5 +187,39 @@ public class TbMMedicalGroupDAO extends BaseDAO {
 		}
 		return result;
 	}
+	
+	public List<TbMMedicalGroup> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Medical Group 
+		List<TbMMedicalGroup> lst = new ArrayList<TbMMedicalGroup>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select mg.id , mb.BRANCHNAME, mg.MEDICAL_GROUP_NAME , mg.prefix , ");
+		sql.append("case when mg.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
+		sql.append("from TB_M_MEDICAL_GROUP mg  ");
+		sql.append("left outer join TB_M_BRANCH mb on mg.branch_id = mb.id  ");
+		sql.append("ORDER BY mb.BRANCHNAME, mg.MEDICAL_GROUP_NAME ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMMedicalGroup obj2 = new TbMMedicalGroup();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setBranch_name(rs.getString("BRANCHNAME"));
+	            obj2.setMedical_group_name(rs.getString("MEDICAL_GROUP_NAME"));
+	            obj2.setPrefix(rs.getString("prefix"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
+	}
+	
 	
 }
