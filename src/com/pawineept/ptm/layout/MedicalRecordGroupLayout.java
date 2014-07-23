@@ -188,10 +188,12 @@ public class MedicalRecordGroupLayout extends Composite {
 			conn = DBUtil.connect();
 			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
 			TbMMedicalGroup md = new TbMMedicalGroup();
+			System.out.println("medicalgroupid "+medicalgroupid);
 			md.setId(medicalgroupid);
 			dao.select(conn,md);
 			lblNewLabel.setText("แก้ไขข้อมูลกลุ่มเวชระเบียน");
 			txtBranchDesc.setText(md.getBranch_name()==null?"":md.getBranch_name());
+			System.out.println("md.getBranch_name "+md.getBranch_name());
 			txtGroup.setText(md.getMedical_group_name()==null?"":md.getMedical_group_name());
 			txtPrefix.setText(md.getPrefix()==null?"":md.getPrefix());
 			
