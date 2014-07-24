@@ -45,16 +45,19 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
     }
 	
 	public List<TbMPaymentDetailType> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Payment Detail Type
+		//Method : Mode Search All Payment Detail Type with condition for search
 		List<TbMPaymentDetailType> lst = new ArrayList<TbMPaymentDetailType>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select pdt.id , pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME , pdt.total_num , pdt.cost , case when pdt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname from TB_M_PATMENT_DETAIL_TYPE pdt , TB_M_PAYMENT_TYPE pt where pdt.PAY_TYPE_ID = pt.id ");
+		sql.append("select pdt.id , pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME , pdt.total_num , pdt.cost ,  ");
+		sql.append("case when pdt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
+		sql.append("from TB_M_PATMENT_DETAIL_TYPE pdt ");
+		sql.append("left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id ");
 		for(int i=0; i< name.length; i++){
-			sql.append("and ( pt.PAY_TYPE_NAME like ? OR pdt.PAY_DETAIL_TYPE_NAME like ? ) ");
+			sql.append("where ( pt.PAY_TYPE_NAME like ? OR pdt.PAY_DETAIL_TYPE_NAME like ? ) ");
 		}
-		sql.append("ORDER BY 2,3 ");
+		sql.append("ORDER BY pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -85,7 +88,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 	
 	public void select(Connection conn,TbMPaymentDetailType obj2) throws SQLException{
 		//Method : Mode Update and Show Detail Payment Detail Type
-        String sql = "select pdt.*, pt.id as mid , pt.PAY_TYPE_NAME from TB_M_PATMENT_DETAIL_TYPE pdt , TB_M_PAYMENT_TYPE pt where pdt.PAY_TYPE_ID = pt.id and pdt.id = ? ";
+        String sql = "select pdt.*, pt.id as mid , pt.PAY_TYPE_NAME from TB_M_PATMENT_DETAIL_TYPE pdt left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id where pdt.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -142,5 +145,40 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
         }
         
     }
+	
+	public List<TbMPaymentDetailType> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Payment Detail Type 
+		List<TbMPaymentDetailType> lst = new ArrayList<TbMPaymentDetailType>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select pdt.id , pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME , pdt.total_num , pdt.cost ,  ");
+		sql.append("case when pdt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
+		sql.append("from TB_M_PATMENT_DETAIL_TYPE pdt ");
+		sql.append("left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id ");
+		sql.append("ORDER BY pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMPaymentDetailType obj2 = new TbMPaymentDetailType();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setPay_type_name(rs.getString("PAY_TYPE_NAME"));
+	            obj2.setPay_detail_type_name(rs.getString("PAY_DETAIL_TYPE_NAME"));
+	            obj2.setTotal_num(rs.getInt("total_num"));
+	            obj2.setCost(rs.getInt("cost"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
+	}
+	
 	
 }
