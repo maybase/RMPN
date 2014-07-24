@@ -44,16 +44,20 @@ public class TbMPaymentTypeDAO extends BaseDAO {
     }
 	
 	public List<TbMPaymentType> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Payment Type
+		//Method : Mode Search All Payment Type with condition for search
 		List<TbMPaymentType> lst = new ArrayList<TbMPaymentType>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select pt.id , mg.MEDICAL_GROUP_NAME, pt.PAY_TYPE_NAME , case when pt.owner = 1 then 'ภา' else 'บริษัท' end as ownername , case when mg.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname from TB_M_PAYMENT_TYPE pt , TB_M_MEDICAL_GROUP mg where pt.MEDICAL_GROUP_ID = mg.id ");
+		sql.append("select pt.id , mg.MEDICAL_GROUP_NAME, pt.PAY_TYPE_NAME ,  ");
+		sql.append("case when pt.owner = 1 then 'ภา' else 'บริษัท' end as ownername , ");
+		sql.append("case when pt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  ");
+		sql.append("from TB_M_PAYMENT_TYPE pt ");
+		sql.append("left outer join TB_M_MEDICAL_GROUP mg on pt.MEDICAL_GROUP_ID = mg.id ");
 		for(int i=0; i< name.length; i++){
-			sql.append("and ( mg.MEDICAL_GROUP_NAME like ? OR pt.PAY_TYPE_NAME like ? ) ");
+			sql.append("where ( mg.MEDICAL_GROUP_NAME like ? OR pt.PAY_TYPE_NAME like ? ) ");
 		}
-		sql.append("ORDER BY 2,3 ");
+		sql.append("ORDER BY mg.MEDICAL_GROUP_NAME, pt.PAY_TYPE_NAME ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -83,7 +87,7 @@ public class TbMPaymentTypeDAO extends BaseDAO {
 	
 	public void select(Connection conn,TbMPaymentType obj2) throws SQLException{
 		//Method : Mode Update and Show Detail Payment Type
-        String sql = "select pt.*, mg.id as mid ,mg.MEDICAL_GROUP_NAME from TB_M_PAYMENT_TYPE pt , TB_M_MEDICAL_GROUP mg where pt.MEDICAL_GROUP_ID = mg.id and pt.id = ? ";
+        String sql = "select pt.*, mg.id as mid ,mg.MEDICAL_GROUP_NAME from TB_M_PAYMENT_TYPE pt left outer join TB_M_MEDICAL_GROUP mg on pt.MEDICAL_GROUP_ID = mg.id where pt.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -180,5 +184,39 @@ public class TbMPaymentTypeDAO extends BaseDAO {
 	        DBUtil.close(ps);
 		}
 		return result;
+	}
+	
+	public List<TbMPaymentType> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Payment Type 
+		List<TbMPaymentType> lst = new ArrayList<TbMPaymentType>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select pt.id , mg.MEDICAL_GROUP_NAME, pt.PAY_TYPE_NAME ,  ");
+		sql.append("case when pt.owner = 1 then 'ภา' else 'บริษัท' end as ownername , ");
+		sql.append("case when pt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  ");
+		sql.append("from TB_M_PAYMENT_TYPE pt ");
+		sql.append("left outer join TB_M_MEDICAL_GROUP mg on pt.MEDICAL_GROUP_ID = mg.id ");
+		sql.append("ORDER BY mg.MEDICAL_GROUP_NAME, pt.PAY_TYPE_NAME ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMPaymentType obj2 = new TbMPaymentType();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setMedical_group_name(rs.getString("MEDICAL_GROUP_NAME"));
+	            obj2.setPay_type_name(rs.getString("PAY_TYPE_NAME"));
+	            obj2.setOwner(rs.getString("ownername"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
 	}
 }
