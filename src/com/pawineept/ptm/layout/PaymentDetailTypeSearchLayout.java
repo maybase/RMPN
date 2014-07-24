@@ -37,12 +37,13 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 	 */
 	public PaymentDetailTypeSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(5, false));
+		setLayout(new GridLayout(6, false));
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1));
 		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		lblNewLabel.setText("ค้นหาข้อมูลรายละเอียดประเภทการชำระเงิน");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
 		Label lblNewLabel_1 = new Label(this, SWT.NONE);
@@ -56,7 +57,7 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				if(txtSearch.getText().trim().length()>0)
-					searchUserRecord();
+					searchPaymentDetailTypeRecord();
 				else
 					table.removeAll();
 			}
@@ -80,6 +81,16 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 		btnAdd.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnAdd.setText("เพิ่มรายละเอียดประเภทชำระเงิน");
 		
+		Button button = new Button(this, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllPaymentDetailTypeRecord();
+			}
+		});
+		button.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		button.setText("แสดงรายละเอียดชำระเงินทั้งหมด");
+		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -93,7 +104,7 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 				ApplicationMain.openShell();
 			}
 		});
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -119,13 +130,35 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 
 	}
 	
-	protected void searchUserRecord() {		
+	protected void searchPaymentDetailTypeRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
 			TbMPaymentDetailTypeDAO dao = new TbMPaymentDetailTypeDAO();
 			String name[] = txtSearch.getText().split(" ");
 			List<TbMPaymentDetailType> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMPaymentDetailType obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getPay_type_name(), obj.getPay_detail_type_name(), obj.getTotal_num().toString(), obj.getCost().toString(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllPaymentDetailTypeRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMPaymentDetailTypeDAO dao = new TbMPaymentDetailTypeDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMPaymentDetailType> lst = dao.findAllList(conn,name);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMPaymentDetailType obj = lst.get(i);
