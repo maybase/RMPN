@@ -202,6 +202,9 @@ public class StaffLayout extends Composite {
 		new Label(this, SWT.NONE);
 		
 		btnClear = new Button(this, SWT.NONE);
+		GridData gd_btnClear = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnClear.widthHint = 76;
+		btnClear.setLayoutData(gd_btnClear);
 		btnClear.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
