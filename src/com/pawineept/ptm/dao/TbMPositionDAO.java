@@ -44,16 +44,16 @@ public class TbMPositionDAO extends BaseDAO {
     }
 	
 	public List<TbMPosition> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Position
+		//Method : Mode Search All Position with condition for search
 		List<TbMPosition> lst = new ArrayList<TbMPosition>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		sql.append("select id , POSTION_NAME, REMARK, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_POSITION where 1=2 ");
+		sql.append("select id , POSTION_NAME, REMARK, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_POSITION ");
 		for(int i=0; i< name.length; i++){
-			sql.append("OR POSTION_NAME like ? ");
+			sql.append("where POSTION_NAME like ? ");
 		}
-		sql.append("ORDER BY 2 ");
+		sql.append("ORDER BY POSTION_NAME ");
 		try{
 			ps = conn.prepareStatement(sql.toString());
 	        int num=1;
@@ -175,6 +175,35 @@ public class TbMPositionDAO extends BaseDAO {
 	        DBUtil.close(ps);
 		}
 		return result;
+	}
+	
+	public List<TbMPosition> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Position 
+		List<TbMPosition> lst = new ArrayList<TbMPosition>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select id , POSTION_NAME, REMARK, case when status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname  from TB_M_POSITION ");
+		sql.append("ORDER BY POSTION_NAME ");
+		try{
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbMPosition obj2 = new TbMPosition();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setPosition_name(rs.getString("POSTION_NAME"));
+	            obj2.setRemark(rs.getString("REMARK"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
 	}
 	
 }
