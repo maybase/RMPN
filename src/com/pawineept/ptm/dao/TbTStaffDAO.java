@@ -49,7 +49,7 @@ public class TbTStaffDAO extends BaseDAO {
     }
 	
 	public List<TbTStaff> findAllName(Connection conn, String[] name) throws SQLException {
-		//Method : Mode Search All Staff
+		//Method : Mode Search All Staff with condition for search
 		List<TbTStaff> lst = new ArrayList<TbTStaff>();
 		StringBuilder sql = new StringBuilder();
 		PreparedStatement ps = null;
@@ -100,7 +100,12 @@ public class TbTStaffDAO extends BaseDAO {
 	
 	public void select(Connection conn,TbTStaff obj2) throws SQLException{
 		//Method : Mode Update and Show Detail Staff
-        String sql = "select ts.*, ct.TITLEID, ct.TITLE_DESC_TH, po.id as poId,  po.POSTION_NAME from TB_T_STAFF ts, TB_C_TITLE ct, TB_M_POSITION po where ts.TITLE_ID = ct.titleid and ts.position_id = po.id and ts.id = ? ";
+        String sql = "select ts.*, ct.TITLEID, ct.TITLE_DESC_TH, po.id as poId,  po.POSTION_NAME"
+        		+ " from TB_T_STAFF ts "
+        		+ " left outer join TB_C_TITLE ct on ts.TITLE_ID = ct.titleid "
+        		+ " left outer join TB_M_POSITION po on ts.position_id = po.id "
+        		+ " where ts.id = ? ";
+        
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -173,5 +178,45 @@ public class TbTStaffDAO extends BaseDAO {
         }
         
     }
+	
+	public List<TbTStaff> findAllList(Connection conn, String[] name) throws SQLException {
+		//Method : Mode Search All Staff 
+		List<TbTStaff> lst = new ArrayList<TbTStaff>();
+		StringBuilder sql = new StringBuilder();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		sql.append("select ts.id, ts.FIRST_NAME, ts.LAST_NAME, ts.ADDRESS, ts.PHONE, ct.TITLE_DESC_TH, po.POSTION_NAME  ");
+		sql.append(", case when ts.jobtype = 1 then 'ประจำ' else 'ขั่วคราว' end as jobtypename ");
+		sql.append(", case when ts.status = 1 then 'ปกติ' else 'ลาออก' end as statusname  ");
+		sql.append(" from TB_T_STAFF ts ");
+		sql.append("left outer join TB_C_TITLE ct on ts.TITLE_ID = ct.titleid ");
+		sql.append("left outer join TB_M_POSITION po on ts.position_id = po.id ");
+		sql.append("ORDER BY FIRST_NAME,LAST_NAME ");
+		try{
+			System.out.println(sql.toString());
+			ps = conn.prepareStatement(sql.toString());
+			rs = ps.executeQuery();
+	        while(rs.next()){
+	        	TbTStaff obj2 = new TbTStaff();
+	        	obj2.setId(rs.getInt("id"));
+	            obj2.setFirstName(rs.getString("FIRST_NAME"));
+	            obj2.setLastName(rs.getString("LAST_NAME"));
+	            obj2.setAddress(rs.getString("ADDRESS"));
+	            obj2.setPhone(rs.getString("PHONE"));
+	            obj2.setTitleName(rs.getString("TITLE_DESC_TH"));
+	            obj2.setPositionName(rs.getString("POSTION_NAME"));
+	            obj2.setJobTypeName(rs.getString("jobtypename"));
+	            obj2.setStatus(rs.getString("statusname"));
+	            lst.add(obj2);
+	        }
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;		
+	}
 	
 }
