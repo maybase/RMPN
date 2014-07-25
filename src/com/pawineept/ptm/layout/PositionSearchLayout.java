@@ -32,6 +32,7 @@ public class PositionSearchLayout extends Composite {
 	private TableColumn tableColumn;
 	private TableColumn tableColumn_1;
 	private TableColumn tableColumn_2;
+	private Button button;
 
 	/**
 	 * Create the composite.
@@ -40,12 +41,13 @@ public class PositionSearchLayout extends Composite {
 	 */
 	public PositionSearchLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(5, false));
+		setLayout(new GridLayout(6, false));
 		
 		Label label = new Label(this, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 5, 1));
 		label.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.BOLD));
 		label.setText("ค้นหาข้อมูลตำแหน่งงาน");
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
 		Label label_1 = new Label(this, SWT.NONE);
@@ -59,7 +61,7 @@ public class PositionSearchLayout extends Composite {
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				if(txtSearch.getText().trim().length()>0)
-					searchUserRecord();
+					searchPositionRecord();
 				else
 					table.removeAll();
 			}
@@ -82,6 +84,16 @@ public class PositionSearchLayout extends Composite {
 		btnAdd.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnAdd.setText("เพิ่มตำแหน่งงาน");
 		
+		button = new Button(this, SWT.NONE);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				searchAllPositionRecord();
+			}
+		});
+		button.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		button.setText("แสดงตำแหน่งงานทั้งหมด");
+		
 		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -95,7 +107,7 @@ public class PositionSearchLayout extends Composite {
 				ApplicationMain.openShell();
 			}
 		});
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -113,13 +125,35 @@ public class PositionSearchLayout extends Composite {
 
 	}
 	
-	protected void searchUserRecord() {		
+	protected void searchPositionRecord() {		
 		Connection conn = null;
 		try{
 			conn= DBUtil.connect();
 			TbMPositionDAO dao = new TbMPositionDAO();
 			String name[] = txtSearch.getText().split(" ");
 			List<TbMPosition> lst = dao.findAllName(conn,name);
+			table.removeAll();
+			for(int i=0;i<lst.size();i++){
+				TbMPosition obj = lst.get(i);
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem.setText(new String[] {obj.getPosition_name(), obj.getRemark(), obj.getStatus(), ""});
+				tableItem.setData(obj.getId().toString());
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DBUtil.close(conn);
+		}
+		
+	}
+	
+	protected void searchAllPositionRecord() {		
+		Connection conn = null;
+		try{
+			conn= DBUtil.connect();
+			TbMPositionDAO dao = new TbMPositionDAO();
+			String name[] = txtSearch.getText().split(" ");
+			List<TbMPosition> lst = dao.findAllList(conn,name);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMPosition obj = lst.get(i);
