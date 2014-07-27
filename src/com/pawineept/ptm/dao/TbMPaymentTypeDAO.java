@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.pawineept.ptm.model.TbMMedicalGroup;
 import com.pawineept.ptm.model.TbMPaymentType;
 import com.pawineept.ptm.util.DBUtil;
 
@@ -186,7 +184,7 @@ public class TbMPaymentTypeDAO extends BaseDAO {
 		return result;
 	}
 	
-	public List<TbMPaymentType> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMPaymentType> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Payment Type 
 		List<TbMPaymentType> lst = new ArrayList<TbMPaymentType>();
 		StringBuilder sql = new StringBuilder();

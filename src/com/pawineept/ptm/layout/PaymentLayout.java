@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,21 +29,21 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 
+import com.ibm.icu.math.BigDecimal;
 import com.pawineept.ptm.dao.TbTPatientDAO;
 import com.pawineept.ptm.dao.TbTScheduleDAO;
 import com.pawineept.ptm.model.TbTPatient;
 import com.pawineept.ptm.model.TbTSchedule;
+import com.pawineept.ptm.popup.PaymentDetailAddDialog;
 import com.pawineept.ptm.util.DBUtil;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
 public class PaymentLayout extends Composite {
-	private Table table;
-	private Text text;
+	private Text txtMoney;
 	Text txt1;
 	Text txt2;
-	Label lblBalance;
-	Label lblChange;
 	Combo cmbPTReady;
 	GridData gd_cmbPTReady;
 	
@@ -52,6 +53,9 @@ public class PaymentLayout extends Composite {
 	private Label vAddress;
 	private Label vLastService;
 	private Label vLastPaymentAmt;
+	public static Table table;
+	private static Text txtBalance;
+	private Text txtChange;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -194,18 +198,24 @@ public class PaymentLayout extends Composite {
 		group_2.setLayout(new GridLayout(6, false));
 		group_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
 		group_2.setText("รายการค่าชำระปัจจุบัน");
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
+		new Label(group_2, SWT.NONE);
 		
-		Label lblNewLabel = new Label(group_2, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel.setText("กลุ่มประเภทชำระเงิน");
+		Button btnDelPay = new Button(group_2, SWT.NONE);
+		btnDelPay.setText("ลบรายการ");
 		
-		Combo combo = new Combo(group_2, SWT.NONE);
-		combo.setItems(new String[] {"คนไข้ทั่วไป", "อัมพาต", "โยคะ", "ซื้อแพคเกต ภา", "ซื้อแพคเกตบริษัท"});
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		new Label(group_2, SWT.NONE);
-		new Label(group_2, SWT.NONE);
-		new Label(group_2, SWT.NONE);
-		new Label(group_2, SWT.NONE);
+		Button btn_addPay = new Button(group_2, SWT.NONE);
+		btn_addPay.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PaymentDetailAddDialog dialog = new PaymentDetailAddDialog(getShell(), SWT.NONE);
+				dialog.open();
+			}
+		});
+		btn_addPay.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		btn_addPay.setText("เพิ่มรายการ");
 		
 		table = new Table(group_2, SWT.BORDER | SWT.FULL_SELECTION);
 		table.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -220,9 +230,6 @@ public class PaymentLayout extends Composite {
 		TableColumn tableColumn_1 = new TableColumn(table, SWT.RIGHT);
 		tableColumn_1.setWidth(100);
 		tableColumn_1.setText("ราคา");
-		
-		TableItem tableItem = new TableItem(table, SWT.NONE);
-		tableItem.setText(new String[] {"ค่ารักษาทางกายภาพบำบัด"});
 		
 		TableEditor editor = new TableEditor(table);
 		txt1 = new Text(table,SWT.RIGHT);
@@ -252,10 +259,6 @@ public class PaymentLayout extends Composite {
 		        }
 			}
 		});
-		editor.setEditor(txt1, tableItem, 1);
-		
-		TableItem tableItem_1 = new TableItem(table, SWT.NONE);
-		tableItem_1.setText(new String[] {"อุปกรณ์ทางกายภาพบำบัด"});
 		TableEditor editor2 = new TableEditor(table);
 		txt2 = new Text(table,SWT.RIGHT);
 		txt2.setText("0.00");
@@ -284,7 +287,6 @@ public class PaymentLayout extends Composite {
 		        }
 			}
 		});
-		editor2.setEditor(txt2, tableItem_1, 1);
 		editor.grabHorizontal = true;
 		editor2.grabHorizontal = true;
 		new Label(group_2, SWT.NONE);
@@ -299,13 +301,12 @@ public class PaymentLayout extends Composite {
 		label_9.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_9.setText("รวม");
 		
-		lblBalance = new Label(group_2, SWT.NONE);
-		lblBalance.setAlignment(SWT.RIGHT);
-		lblBalance.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
-		GridData gd_lblBalance = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblBalance.widthHint = 61;
-		lblBalance.setLayoutData(gd_lblBalance);
-		lblBalance.setText("0.00");
+		txtBalance = new Text(group_2, SWT.READ_ONLY | SWT.RIGHT);
+		txtBalance.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+		txtBalance.setText("0.00");
+		GridData gd_txtBalance = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_txtBalance.widthHint = 79;
+		txtBalance.setLayoutData(gd_txtBalance);
 		
 		Label label_11 = new Label(group_2, SWT.NONE);
 		label_11.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
@@ -319,12 +320,12 @@ public class PaymentLayout extends Composite {
 		label_12.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_12.setText("รับเงินจำนวน");
 		
-		text = new Text(group_2, SWT.RIGHT);	
-		text.setText("0.00");
-		text.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		txtMoney = new Text(group_2, SWT.RIGHT);	
+		txtMoney.setText("0.00");
+		txtMoney.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+		txtMoney.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
-		text.addVerifyListener(new VerifyListener() {
+		txtMoney.addVerifyListener(new VerifyListener() {
 			public void verifyText(VerifyEvent arg0) {
 				switch (arg0.keyCode) {  
 		            case SWT.BS:           // Backspace  
@@ -344,17 +345,17 @@ public class PaymentLayout extends Composite {
 		        }
 			}
 		});
-		text.addMouseListener(new MouseAdapter() {
+		txtMoney.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				text.selectAll();
+				txtMoney.selectAll();
 			}
 		});
-		text.addFocusListener(new FocusAdapter() {
+		txtMoney.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
 				DecimalFormat myFormatter = new DecimalFormat("###,###.00");
-				System.out.println("myFormatter:"+myFormatter.format(new Double(text.getText())));
+				System.out.println("myFormatter:"+myFormatter.format(new Double(txtMoney.getText())));
 			}
 		});
 		
@@ -371,11 +372,11 @@ public class PaymentLayout extends Composite {
 		label_14.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_14.setText("เงินทอน");
 		
-		lblChange = new Label(group_2, SWT.NONE);
-		lblChange.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblChange.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
-		lblChange.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblChange.setText("0.00");
+		txtChange = new Text(group_2, SWT.RIGHT);
+		txtChange.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		txtChange.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+		txtChange.setText("0.00");
+		txtChange.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		Label label_15 = new Label(group_2, SWT.NONE);
 		label_15.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -413,5 +414,17 @@ public class PaymentLayout extends Composite {
 		}finally{
 			DBUtil.close(conn);
 		}
+	}
+
+	public static void calculate() {
+		TableItem[] items =  table.getItems();
+		double total = 0.0;
+		for (TableItem tableItem : items) {
+			HashMap<String,Object> hashMap = (HashMap<String, Object>) tableItem.getData();
+			System.out.println(hashMap.get("COST"));
+			total += Double.parseDouble(String.valueOf(hashMap.get("COST")));
+		}
+		System.out.println(total);
+		txtBalance.setText(String.valueOf(new BigDecimal(total).setScale(2)));
 	}
 }

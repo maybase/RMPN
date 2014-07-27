@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pawineept.ptm.model.TbMPaymentDetailType;
-import com.pawineept.ptm.model.TbMPaymentType;
 import com.pawineept.ptm.util.DBUtil;
 
 public class TbMPaymentDetailTypeDAO extends BaseDAO {
@@ -178,6 +177,37 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 	        DBUtil.close(ps);
 		}
 		return lst;		
+	}
+
+	public List<TbMPaymentDetailType> findActiveListByParentName(
+			Connection conn, String parentname) throws SQLException {
+		String sql = "select D.ID, D.PAY_DETAIL_TYPE_NAME, D.COST  from TB_M_PAYMENT_DETAIL_TYPE D "
+				+ "join TB_M_PAYMENT_TYPE T ON T.ID=D.PAY_TYPE_ID "
+				+ "WHERE D.STATUS=1 AND T.STATUS=1 AND T.PAY_TYPE_NAME = ? ORDER BY 1";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<TbMPaymentDetailType> lst = new ArrayList<TbMPaymentDetailType>();
+		try{
+			ps = conn.prepareStatement(sql);
+			value(ps,1,parentname);
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				TbMPaymentDetailType obj = new TbMPaymentDetailType();
+				obj.setCost(rs.getInt("COST"));
+				obj.setId(rs.getInt("ID"));
+				obj.setPay_detail_type_name(rs.getString("PAY_DETAIL_TYPE_NAME"));
+				lst.add(obj);
+			}
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			DBUtil.close(rs);
+	        DBUtil.close(ps);
+		}
+		return lst;
 	}
 	
 	
