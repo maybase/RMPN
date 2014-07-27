@@ -14,7 +14,7 @@ import com.pawineept.ptm.util.DBUtil;
 public class TbMPaymentDetailTypeDAO extends BaseDAO {
 	public int insert(Connection conn, TbMPaymentDetailType obj) throws SQLException{
         StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO TB_M_PATMENT_DETAIL_TYPE ");
+        sql.append("INSERT INTO TB_M_PAYMENT_DETAIL_TYPE ");
         sql.append("(PAY_TYPE_ID, PAY_DETAIL_TYPE_NAME, TOTAL_NUM, COST, STATUS, created_by, created_date ) ");
         sql.append("VALUES ( ?, ?, ?, ?, ?, ?, ?) ");
         PreparedStatement ps = null;
@@ -52,7 +52,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 		ResultSet rs = null;
 		sql.append("select pdt.id , pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME , pdt.total_num , pdt.cost ,  ");
 		sql.append("case when pdt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
-		sql.append("from TB_M_PATMENT_DETAIL_TYPE pdt ");
+		sql.append("from TB_M_PAYMENT_DETAIL_TYPE pdt ");
 		sql.append("left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id ");
 		for(int i=0; i< name.length; i++){
 			sql.append("where ( pt.PAY_TYPE_NAME like ? OR pdt.PAY_DETAIL_TYPE_NAME like ? ) ");
@@ -88,7 +88,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 	
 	public void select(Connection conn,TbMPaymentDetailType obj2) throws SQLException{
 		//Method : Mode Update and Show Detail Payment Detail Type
-        String sql = "select pdt.*, pt.id as mid , pt.PAY_TYPE_NAME from TB_M_PATMENT_DETAIL_TYPE pdt left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id where pdt.id = ? ";
+        String sql = "select pdt.*, pt.id as mid , pt.PAY_TYPE_NAME from TB_M_PAYMENT_DETAIL_TYPE pdt left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id where pdt.id = ? ";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -115,7 +115,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 	
 	public void update(Connection conn,TbMPaymentDetailType obj) throws SQLException{
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE TB_M_PATMENT_DETAIL_TYPE ");
+        sql.append("UPDATE TB_M_PAYMENT_DETAIL_TYPE ");
         sql.append("SET PAY_TYPE_ID = ? , ");
         sql.append("PAY_DETAIL_TYPE_NAME = ? , ");
         sql.append("TOTAL_NUM = ? , ");
@@ -154,7 +154,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 		ResultSet rs = null;
 		sql.append("select pdt.id , pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME , pdt.total_num , pdt.cost ,  ");
 		sql.append("case when pdt.status = 1 then 'ใช้งาน' else 'ไม่ใช้งาน' end as statusname ");
-		sql.append("from TB_M_PATMENT_DETAIL_TYPE pdt ");
+		sql.append("from TB_M_PAYMENT_DETAIL_TYPE pdt ");
 		sql.append("left outer join TB_M_PAYMENT_TYPE pt on pdt.PAY_TYPE_ID = pt.id ");
 		sql.append("ORDER BY pt.PAY_TYPE_NAME, pdt.PAY_DETAIL_TYPE_NAME ");
 		try{
