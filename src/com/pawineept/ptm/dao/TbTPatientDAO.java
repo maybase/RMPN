@@ -24,8 +24,8 @@ public class TbTPatientDAO extends BaseDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO tb_t_patient ");
         sql.append("(PATIENTID,TITLEID, FIRSTNAME, LASTNAME, AGE, BIRTH_DATE,Occupation,POSITION,ADDRESS,TELEPHONE,MOBILEPHONE,EMAIL,IDCARD, ");
-        sql.append("FLAG_NOUSE_PATIENTID,CREATE_BY,CREATE_DATETIME,NICKNAME) ");
-        sql.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'),?)");
+        sql.append("FLAG_NOUSE_PATIENTID,CREATE_BY,CREATE_DATETIME,NICKNAME,REMARK,SEX) ");
+        sql.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'),?,?,?)");
         PreparedStatement ps = null;
         try{
 	        ps = conn.prepareStatement(sql.toString());
@@ -46,6 +46,8 @@ public class TbTPatientDAO extends BaseDAO {
 	        value(ps,i++,obj.getFlagNousePatientid());
 	        value(ps,i++,obj.getCreateBy());
 	        value(ps,i++,obj.getNickname());
+	        value(ps,i++,obj.getRemark());
+	        value(ps,i++,obj.getSex());
 	        ps.execute();
         }catch(SQLException e){
         	e.printStackTrace();
@@ -71,6 +73,9 @@ public class TbTPatientDAO extends BaseDAO {
         sql.append("EMAIL = ? , ");
         sql.append("IDCARD = ? , ");
         sql.append("FLAG_NOUSE_PATIENTID = ? , ");
+        sql.append("REMARK = ? , ");
+        sql.append("SEX = ? , ");
+        sql.append("Occupation = ? , ");
         sql.append("MODIFIED_BY = ? , ");
         sql.append("MODIFIED_DATETIME = datetime('now','localtime') ");
         sql.append("WHERE PATIENTID = ? ");
@@ -91,7 +96,10 @@ public class TbTPatientDAO extends BaseDAO {
 	        value(ps,i++,obj.getEmail());
 	        value(ps,i++,obj.getIdcard());
 	        value(ps,i++,obj.getFlagNousePatientid());
-	        value(ps,i++,obj.getCreateBy());
+	        value(ps,i++,obj.getRemark());
+	        value(ps,i++,obj.getSex());
+	        value(ps,i++,obj.getOccupation());
+	        value(ps,i++,obj.getModifiedBy());
 	        value(ps,i++,obj.getPatientid());
 	        ps.execute();
         }catch(SQLException e){
@@ -129,6 +137,9 @@ public class TbTPatientDAO extends BaseDAO {
 	            obj2.setEmail(rs.getString("EMAIL"));
 	            obj2.setIdcard(rs.getString("IDCARD"));
 	            obj2.setFlagNousePatientid(rs.getString("FLAG_NOUSE_PATIENTID"));
+	            obj2.setRemark(rs.getString("REMARK"));
+	            obj2.setNickname(rs.getString("NICKNAME"));
+	            obj2.setSex(rs.getString("SEX"));
 	        }        
         }catch(SQLException e){
 	        e.printStackTrace();
