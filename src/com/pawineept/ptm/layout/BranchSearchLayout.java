@@ -157,8 +157,7 @@ public class BranchSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbMBranchDAO dao = new TbMBranchDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbMBranch> lst = dao.findAllList(conn,name);
+			List<TbMBranch> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMBranch obj = lst.get(i);
