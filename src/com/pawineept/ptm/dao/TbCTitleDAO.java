@@ -174,7 +174,7 @@ public class TbCTitleDAO extends BaseDAO {
 		return lst;		
 	}
 	
-	public List<TbCTitle> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbCTitle> findAllDetailList(Connection conn) throws SQLException {
 		//Method : Mode Search All Title 
 		List<TbCTitle> lst = new ArrayList<TbCTitle>();
 		StringBuilder sql = new StringBuilder();
