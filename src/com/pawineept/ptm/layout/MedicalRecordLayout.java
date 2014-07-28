@@ -53,6 +53,8 @@ public class MedicalRecordLayout extends Composite {
 	
 	private Label txtErrorMsg;
 	private Text txtptno;
+	private Text txtRemark;
+	public static boolean validReqFieldMode = false;
 
 	/**
 	 * Create the composite.
@@ -254,6 +256,17 @@ public class MedicalRecordLayout extends Composite {
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
+		
+		Label lblNewLabel = new Label(this, SWT.NONE);
+		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		lblNewLabel.setText("หมายเหตุ");
+		
+		txtRemark = new Text(this, SWT.BORDER);
+		txtRemark.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		txtRemark.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 6, 1));
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
 		
 		txtErrorMsg = new Label(this, SWT.NONE);
@@ -355,6 +368,7 @@ public class MedicalRecordLayout extends Composite {
 			txtIDCard.setText(pt.getIdcard()==null?"":pt.getIdcard());
 			txtAddress.setText(pt.getAddress()==null?"":pt.getAddress());
 			txtPhone.setText(pt.getMobilephone()==null?pt.getTelephone():pt.getMobilephone());
+			txtRemark.setText(pt.getRemark()==null?pt.getRemark():pt.getRemark());
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -393,57 +407,82 @@ public class MedicalRecordLayout extends Composite {
 			TbCTitleDAO titleDAO = new TbCTitleDAO();
 			TbTPatientDAO dao = new TbTPatientDAO();
 			TbCTitle title = new TbCTitle();
-			title.setTitleDescTh(txtTitleDesc.getText());
-			title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
 			
-			obj.setTitle(title);
-			obj.setFirstname(txtFirstName.getText());
-			obj.setLastname(txtLastName.getText());
-			obj.setNickname(txtNickName.getText());
-			obj.setAge(NumberUtil.getLong(txtAge.getText()));
-			SimpleDateFormat sdffull = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
-			System.out.println("Date:"+sdffull.parse(txtBirthDate.getDay()+"/"+(txtBirthDate.getMonth()+1)+"/"+txtBirthDate.getYear()).getTime());
-			System.out.println("Year:"+txtBirthDate.getYear());
-			obj.setBirthDate(new Timestamp(sdffull.parse(txtBirthDate.getDay()+"/"+(txtBirthDate.getMonth()+1)+"/"+txtBirthDate.getYear()).getTime()));
-			obj.setMaritalStatus(txtMaritalStatus.getText());
-			obj.setOccupation(txtOccupation.getText());
-			String blood = txtBlood.getText();
-			if(!txtBloodRh.getText().equalsIgnoreCase("-")){
-				blood += txtBloodRh.getText();
-			}
-			obj.setBlood(blood);
-			obj.setIdcard(txtIDCard.getText());
-			obj.setAddress(txtAddress.getText());
-			obj.setMobilephone(txtPhone.getText());
-			
-			if(modeedit){
-				obj.setPatientid(patientId);
-				dao.update(conn, obj);
-				okMsg("อัพเดทเรียบร้อยแล้ว");
+			//Validate Require Field
+			if(txtFirstName.getText().equals("") || txtFirstName.getText() ==null){
+				errorMsg("กรุณาระบุ ชื่อ");
+				validReqFieldMode = true;
+			}else if(txtLastName.getText().equals("") || txtLastName.getText() ==null){
+				errorMsg("กรุณาระบุ นามสกุล");
+				validReqFieldMode = true;
+			}else if(txtPhone.getText().equals("") || txtPhone.getText() ==null){
+				errorMsg("กรุณาระบุ เบอร์โทรศัพท์ติดต่อ");
+				validReqFieldMode = true;
 			}else{
-				if(txtptno.getText().trim().length()==0){
-					TbRunningnoDAO runDAO = new TbRunningnoDAO();
-					TbRunningno runno = new TbRunningno();
-					SimpleDateFormat sdf = new SimpleDateFormat("yy",new Locale("th", "TH"));
-					runno.setYear(sdf.format(new java.util.Date()));
-					runno.setPrefix("PT");
-					int maxrun = runDAO.selectMaxRunNo(conn, runno);
-					if(maxrun==0){
-						runno.setRunNum(new Long(1));
-						runDAO.insertRunNo(conn, runno);
-					}else{
-						runDAO.runNoplus(conn, runno);
-					}
-					obj.setPatientid(runno.getPrefix()+"-"+runno.getYear()+"-"+(maxrun+1));
-				}else{
-					obj.setPatientid(txtptno.getText());
-				}
-				obj.setCreateBy(ApplicationMain.USERNAME);
-				dao.insert(conn, obj);
-				patientId = obj.getPatientid();
-				okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
-				findEditMode();
+				validReqFieldMode = false;
 			}
+		
+			
+			System.out.println("validReqFieldMode : "+validReqFieldMode);
+			// No have error about valid field
+			if(!validReqFieldMode){
+			
+				title.setTitleDescTh(txtTitleDesc.getText());
+				title.setId(titleDAO.findIdForNameTH(conn, txtTitleDesc.getText()));
+				
+				obj.setTitle(title);
+				obj.setFirstname(txtFirstName.getText());
+				obj.setLastname(txtLastName.getText());
+				obj.setNickname(txtNickName.getText());
+				obj.setAge(NumberUtil.getLong(txtAge.getText()));
+				SimpleDateFormat sdffull = new SimpleDateFormat("dd/MM/yyyy",Locale.US);
+				System.out.println("Date:"+sdffull.parse(txtBirthDate.getDay()+"/"+(txtBirthDate.getMonth()+1)+"/"+txtBirthDate.getYear()).getTime());
+				System.out.println("Year:"+txtBirthDate.getYear());
+				obj.setBirthDate(new Timestamp(sdffull.parse(txtBirthDate.getDay()+"/"+(txtBirthDate.getMonth()+1)+"/"+txtBirthDate.getYear()).getTime()));
+				obj.setMaritalStatus(txtMaritalStatus.getText());
+				obj.setOccupation(txtOccupation.getText());
+				String blood = txtBlood.getText();
+				if(!txtBloodRh.getText().equalsIgnoreCase("-")){
+					blood += txtBloodRh.getText();
+				}
+				obj.setBlood(blood);
+				obj.setIdcard(txtIDCard.getText());
+				obj.setAddress(txtAddress.getText());
+				obj.setMobilephone(txtPhone.getText());
+				obj.setRemark(txtRemark.getText());
+				obj.setSex(txtSex.getText());
+				
+				if(modeedit){
+					obj.setPatientid(patientId);
+					obj.setModifiedBy(ApplicationMain.USERNAME);
+					dao.update(conn, obj);
+					okMsg("แก้ไขข้อมูลเรียบร้อยแล้ว");
+				}else{
+					if(txtptno.getText().trim().length()==0){
+						TbRunningnoDAO runDAO = new TbRunningnoDAO();
+						TbRunningno runno = new TbRunningno();
+						SimpleDateFormat sdf = new SimpleDateFormat("yy",new Locale("th", "TH"));
+						runno.setYear(sdf.format(new java.util.Date()));
+						runno.setPrefix("PT");
+						int maxrun = runDAO.selectMaxRunNo(conn, runno);
+						if(maxrun==0){
+							runno.setRunNum(new Long(1));
+							runDAO.insertRunNo(conn, runno);
+						}else{
+							runDAO.runNoplus(conn, runno);
+						}
+						obj.setPatientid(runno.getPrefix()+"-"+runno.getYear()+"-"+(maxrun+1));
+					}else{
+						obj.setPatientid(txtptno.getText());
+					}
+					obj.setCreateBy(ApplicationMain.USERNAME);
+					dao.insert(conn, obj);
+					patientId = obj.getPatientid();
+					okMsg("เพิ่มข้อมูลเรียบร้อยแล้ว");
+					findEditMode();
+				}
+			}
+			
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			errorMsg("Error: "+e1.getMessage());
