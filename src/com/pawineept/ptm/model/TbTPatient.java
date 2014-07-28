@@ -31,10 +31,16 @@ public class TbTPatient {
     private Timestamp createDatetime;
     private String modifiedBy;
     private Timestamp modifiedDatetime;
+    private String remark;
     
     
-    
-    public String getSex() {
+    public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getSex() {
 		return sex;
 	}
 	public void setSex(String sex) {
