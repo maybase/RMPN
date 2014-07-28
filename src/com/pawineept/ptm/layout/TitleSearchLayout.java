@@ -161,8 +161,7 @@ public class TitleSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbCTitleDAO dao = new TbCTitleDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbCTitle> lst = dao.findAllList(conn,name);
+			List<TbCTitle> lst = dao.findAllDetailList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbCTitle obj = lst.get(i);
