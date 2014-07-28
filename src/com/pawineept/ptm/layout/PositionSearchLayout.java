@@ -152,8 +152,7 @@ public class PositionSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbMPositionDAO dao = new TbMPositionDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbMPosition> lst = dao.findAllList(conn,name);
+			List<TbMPosition> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMPosition obj = lst.get(i);
