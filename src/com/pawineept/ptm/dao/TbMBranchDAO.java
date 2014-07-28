@@ -181,7 +181,7 @@ public class TbMBranchDAO extends BaseDAO {
 		return result;
 	}
 	
-	public List<TbMBranch> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMBranch> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Branch
 		List<TbMBranch> lst = new ArrayList<TbMBranch>();
 		StringBuilder sql = new StringBuilder();
