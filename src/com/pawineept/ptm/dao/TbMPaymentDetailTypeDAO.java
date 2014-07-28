@@ -145,7 +145,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
         
     }
 	
-	public List<TbMPaymentDetailType> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMPaymentDetailType> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Payment Detail Type 
 		List<TbMPaymentDetailType> lst = new ArrayList<TbMPaymentDetailType>();
 		StringBuilder sql = new StringBuilder();
