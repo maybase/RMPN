@@ -161,8 +161,7 @@ public class StaffSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbTStaffDAO dao = new TbTStaffDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbTStaff> lst = dao.findAllList(conn,name);
+			List<TbTStaff> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbTStaff obj = lst.get(i);
