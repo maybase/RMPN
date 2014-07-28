@@ -161,7 +161,7 @@ public class TbMUserDAO extends BaseDAO {
         
     }
 	
-	public List<TbMUser> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMUser> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All User 
 		List<TbMUser> lst = new ArrayList<TbMUser>();
 		StringBuilder sql = new StringBuilder();
