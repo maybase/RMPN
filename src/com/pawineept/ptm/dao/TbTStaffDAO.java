@@ -179,7 +179,7 @@ public class TbTStaffDAO extends BaseDAO {
         
     }
 	
-	public List<TbTStaff> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbTStaff> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Staff 
 		List<TbTStaff> lst = new ArrayList<TbTStaff>();
 		StringBuilder sql = new StringBuilder();
