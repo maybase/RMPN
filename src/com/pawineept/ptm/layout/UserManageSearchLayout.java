@@ -171,8 +171,7 @@ public class UserManageSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbMUserDAO dao = new TbMUserDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbMUser> lst = dao.findAllList(conn,name);
+			List<TbMUser> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMUser obj = lst.get(i);
