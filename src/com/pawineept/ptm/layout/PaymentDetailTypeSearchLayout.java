@@ -157,8 +157,7 @@ public class PaymentDetailTypeSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbMPaymentDetailTypeDAO dao = new TbMPaymentDetailTypeDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbMPaymentDetailType> lst = dao.findAllList(conn,name);
+			List<TbMPaymentDetailType> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMPaymentDetailType obj = lst.get(i);
