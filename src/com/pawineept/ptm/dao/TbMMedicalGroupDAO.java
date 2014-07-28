@@ -188,7 +188,7 @@ public class TbMMedicalGroupDAO extends BaseDAO {
 		return result;
 	}
 	
-	public List<TbMMedicalGroup> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMMedicalGroup> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Medical Group 
 		List<TbMMedicalGroup> lst = new ArrayList<TbMMedicalGroup>();
 		StringBuilder sql = new StringBuilder();
