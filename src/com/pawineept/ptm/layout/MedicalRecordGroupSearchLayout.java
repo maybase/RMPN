@@ -153,8 +153,7 @@ public class MedicalRecordGroupSearchLayout extends Composite {
 		try{
 			conn= DBUtil.connect();
 			TbMMedicalGroupDAO dao = new TbMMedicalGroupDAO();
-			String name[] = txtSearch.getText().split(" ");
-			List<TbMMedicalGroup> lst = dao.findAllList(conn,name);
+			List<TbMMedicalGroup> lst = dao.findAllList(conn);
 			table.removeAll();
 			for(int i=0;i<lst.size();i++){
 				TbMMedicalGroup obj = lst.get(i);
