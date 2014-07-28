@@ -177,7 +177,7 @@ public class TbMPositionDAO extends BaseDAO {
 		return result;
 	}
 	
-	public List<TbMPosition> findAllList(Connection conn, String[] name) throws SQLException {
+	public List<TbMPosition> findAllList(Connection conn) throws SQLException {
 		//Method : Mode Search All Position 
 		List<TbMPosition> lst = new ArrayList<TbMPosition>();
 		StringBuilder sql = new StringBuilder();
