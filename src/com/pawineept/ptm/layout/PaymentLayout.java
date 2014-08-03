@@ -48,14 +48,14 @@ public class PaymentLayout extends Composite {
 	GridData gd_cmbPTReady;
 	
 	Label vPtNo;
-	Label vFullName;
 	private Label vAge;
-	private Label vAddress;
 	private Label vLastService;
 	private Label vLastPaymentAmt;
 	public static Table table;
 	private static Text txtBalance;
 	private Text txtChange;
+	private Text txtName;
+	private Text txtAddress;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -72,11 +72,12 @@ public class PaymentLayout extends Composite {
 		group.setText("เลือกผู้รับบริการ");
 		
 		Label label = new Label(group, SWT.NONE);
-		label.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		label.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label.setText("ผู้ที่กำลังเข้ารับบริการ");
 		
 		cmbPTReady = new Combo(group, SWT.NONE);
+		cmbPTReady.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		cmbPTReady.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -88,9 +89,9 @@ public class PaymentLayout extends Composite {
 					TbTPatientDAO dao = new TbTPatientDAO();
 					TbTPatient ptObj =  dao.findById(ptid,conn);
 					vPtNo.setText(ptObj.getPatientid());
-					vFullName.setText(ptObj.getFirstname()+" "+ptObj.getLastname());
+					txtName.setText(ptObj.getFirstname()+" "+ptObj.getLastname());
 					vAge.setText(String.valueOf(ptObj.getAge()==null?"":ptObj.getAge()));
-					vAddress.setText(ptObj.getAddress());
+					txtAddress.setText(ptObj.getAddress());
 					vLastService.setText(ptObj.getLastservice()==null?"บริการครั้งแรก":sdflong.format(ptObj.getLastservice()));
 					vLastPaymentAmt.setText("0");
 					
@@ -110,22 +111,27 @@ public class PaymentLayout extends Composite {
 		cmbPTReady.setLayoutData(gd_cmbPTReady);
 		
 		Button button = new Button(group, SWT.NONE);
+		button.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		button.setText("เลือก");
 		
 		Group group_1 = new Group(this, SWT.NONE);
 		group_1.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
-		group_1.setLayout(new GridLayout(7, false));
+		group_1.setLayout(new GridLayout(8, false));
 		group_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		group_1.setText("รายละเอียดผู้ใช้บริการ");
 		
 		Label lblPtNo = new Label(group_1, SWT.NONE);
-		lblPtNo.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblPtNo.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		lblPtNo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPtNo.setText("PT. NO.");
 		
 		vPtNo = new Label(group_1, SWT.NONE);
-		vPtNo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		vPtNo.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		GridData gd_vPtNo = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_vPtNo.widthHint = 99;
+		vPtNo.setLayoutData(gd_vPtNo);
 		vPtNo.setText("-");
+		new Label(group_1, SWT.NONE);
 		new Label(group_1, SWT.NONE);
 		new Label(group_1, SWT.NONE);
 		new Label(group_1, SWT.NONE);
@@ -133,25 +139,24 @@ public class PaymentLayout extends Composite {
 		new Label(group_1, SWT.NONE);
 		
 		Label label_1 = new Label(group_1, SWT.NONE);
-		label_1.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		label_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_1.setText("ชื่อ");
 		
-		vFullName = new Label(group_1, SWT.NONE);
-		vFullName.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
-		GridData gd_vFullName = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_vFullName.widthHint = 271;
-		vFullName.setLayoutData(gd_vFullName);
-		vFullName.setText("-");
+		txtName = new Text(group_1, SWT.BORDER);
+		txtName.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		GridData gd_txtName = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
+		gd_txtName.widthHint = 232;
+		txtName.setLayoutData(gd_txtName);
 		new Label(group_1, SWT.NONE);
 		
 		Label label_2 = new Label(group_1, SWT.NONE);
-		label_2.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		label_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_2.setText("อายุ");
 		
 		vAge = new Label(group_1, SWT.NONE);
-		vAge.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
+		vAge.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		vAge.setAlignment(SWT.RIGHT);
 		GridData gd_vAge = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_vAge.widthHint = 22;
@@ -159,38 +164,54 @@ public class PaymentLayout extends Composite {
 		vAge.setText("-");
 		
 		Label label_4 = new Label(group_1, SWT.NONE);
-		label_4.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
+		label_4.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		label_4.setText("ปี");
 		new Label(group_1, SWT.NONE);
 		
 		Label label_3 = new Label(group_1, SWT.NONE);
-		label_3.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		label_3.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_3.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 		label_3.setText("ที่อยู่");
 		
-		vAddress = new Label(group_1, SWT.NONE);
-		vAddress.setText("-");
-		vAddress.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
-		GridData gd_vAddress = new GridData(SWT.FILL, SWT.TOP, false, false, 6, 1);
-		gd_vAddress.heightHint = 41;
-		vAddress.setLayoutData(gd_vAddress);
+		txtAddress = new Text(group_1, SWT.BORDER | SWT.MULTI);
+		txtAddress.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
+		GridData gd_txtAddress = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+		gd_txtAddress.heightHint = 64;
+		txtAddress.setLayoutData(gd_txtAddress);
+		new Label(group_1, SWT.NONE);
+		new Label(group_1, SWT.NONE);
+		new Label(group_1, SWT.NONE);
+		new Label(group_1, SWT.NONE);
+		
+		Label label_6 = new Label(group_1, SWT.NONE);
+		label_6.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+		label_6.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+		label_6.setText("รายละเอียดเพิ่มเติม");
+		
+		Label lblNewLabel = new Label(group_1, SWT.NONE);
+		GridData gd_lblNewLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 7, 1);
+		gd_lblNewLabel.heightHint = 47;
+		lblNewLabel.setLayoutData(gd_lblNewLabel);
+		lblNewLabel.setText("-");
 		
 		Label label_5 = new Label(group_1, SWT.NONE);
-		label_5.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		label_5.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		label_5.setText("ใช้บริการล่าสุดวันที่");
 		
 		vLastService = new Label(group_1, SWT.NONE);
 		vLastService.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		vLastService.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
+		vLastService.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		vLastService.setText("-");
+		new Label(group_1, SWT.NONE);
 		
 		Label label_7 = new Label(group_1, SWT.NONE);
-		label_7.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		label_7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		label_7.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		label_7.setText("ค่าบริการล่าสุด");
 		
 		vLastPaymentAmt = new Label(group_1, SWT.NONE);
-		vLastPaymentAmt.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
+		vLastPaymentAmt.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		vLastPaymentAmt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		vLastPaymentAmt.setText("-");
 		
@@ -204,9 +225,11 @@ public class PaymentLayout extends Composite {
 		new Label(group_2, SWT.NONE);
 		
 		Button btnDelPay = new Button(group_2, SWT.NONE);
+		btnDelPay.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnDelPay.setText("ลบรายการ");
 		
 		Button btn_addPay = new Button(group_2, SWT.NONE);
+		btn_addPay.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btn_addPay.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -386,10 +409,19 @@ public class PaymentLayout extends Composite {
 		new Label(group_2, SWT.NONE);
 		
 		Button button_1 = new Button(this, SWT.NONE);
+		button_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// insert payment
+				
+			}
+		});
+		button_1.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		button_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		button_1.setText("ชำระค่าบริการ");
 		
 		Button button_2 = new Button(this, SWT.NONE);
+		button_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		button_2.setText("พิมพ์ใบเสร็จรับเงิน");
 	}
 
