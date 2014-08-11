@@ -157,4 +157,17 @@ public class TbTScheduleDAO extends BaseDAO {
 		return lst;
 	}
 
+	public void updateStatusPayment(String PATIENT_ID, Connection conn) throws SQLException {
+		PreparedStatement ps = null;
+		String sql = "update Tb_T_Schedule set status=3 where PATIENT_ID=? and status=2";
+		try{
+			ps = conn.prepareStatement(sql);
+			int i=1;
+			value(ps,i++,PATIENT_ID);
+			ps.executeUpdate();
+		}finally{
+			DBUtil.close(ps);
+		}
+	}
+
 }

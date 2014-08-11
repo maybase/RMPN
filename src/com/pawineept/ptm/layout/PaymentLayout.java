@@ -68,6 +68,7 @@ public class PaymentLayout extends Composite {
 	private Text txtAddress;
 	private Label vReceiptNo;
 	private Label vMessage;
+	private Button button_1;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -447,12 +448,16 @@ public class PaymentLayout extends Composite {
 		gd_vMessage.widthHint = 430;
 		vMessage.setLayoutData(gd_vMessage);
 		
-		Button button_1 = new Button(this, SWT.NONE);
+		button_1 = new Button(this, SWT.NONE);
 		button_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Connection conn = null;
-				
+				if(vReceiptNo.getText().trim().length()>1){
+					vMessage.setText("ไม่สามารถแก้ไขข้อมูลได้");
+					return;
+				}
+				button_1.setEnabled(false);
 				// insert payment
 				int itemcount = table.getItemCount();
 				try {
@@ -518,6 +523,8 @@ public class PaymentLayout extends Composite {
 					}
 					tbTPayment.setTotalAmount(totalAmount);
 					tbTPaymentDAO.updateTotalAmount(conn,receiptNo,totalAmount);
+					TbTScheduleDAO scheduleDAO = new TbTScheduleDAO();					
+					scheduleDAO.updateStatusPayment(vPtNo.getText(), conn);
 					vReceiptNo.setText(receiptNo);
 					vMessage.setText("บันทึกข้อมูลเรียบร้อยแล้ว");
 					
