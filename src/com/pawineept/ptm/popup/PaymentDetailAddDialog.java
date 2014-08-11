@@ -167,6 +167,7 @@ public class PaymentDetailAddDialog extends Dialog {
 				HashMap<String,Object> map = new HashMap<String,Object>();
 				map.put("ID", typeDetail.getId());
 				map.put("COST", txt_payamt.getText());
+				map.put("UNIT", typeDetail.getTotal_num());
 				tableItem.setData(map);
 				PaymentLayout.calculate();
 			}

@@ -7,18 +7,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
 
 import com.pawineept.ptm.model.TbTPatient;
 
@@ -57,11 +58,11 @@ public class ReportUtil {
         param.put("P_SEX", value(tbTPatient.getSex()));
         param.put("P_OCCUPATION", value(tbTPatient.getOccupation()));  
         String destFile = "pdf/patient/"+tbTPatient.getPatientid()+".pdf";
-        printReport("report/PT101R1.jasper",destFile,param);
+        printReport("report/PT101R1.jasper",destFile,param,null);
 		
         
 	}
-	private void printReport(String srcReport, String destFile, Map<String, Object> param) {
+	private void printReport(String srcReport, String destFile, Map<String, Object> param, Connection conn) throws Exception {
 		FileInputStream fis = null;
 		try {
 			printMap(param);
@@ -75,22 +76,20 @@ public class ReportUtil {
 				System.out.println("Create Path:"+outPath.getAbsolutePath());
 				outPath.mkdirs();
 			}
-			boolean printfromFile = true;
-			if(printfromFile){
-				JasperPrint fillReport = JasperFillManager.fillReport(inFile.getAbsolutePath(), param, new JREmptyDataSource());
-				OutputStream output = new FileOutputStream(outFile); 
-		        JasperExportManager.exportReportToPdfStream(fillReport, output); 
-				output.flush();
-				output.close();
-				
-				Desktop desktop = Desktop.getDesktop();
-				desktop.open(outFile); // open pdf
-//				desktop.print(outFile); // print pdf A4 only
-                
-			}else{			
-	            JasperPrint fillReport = JasperFillManager.fillReport(inFile.getAbsolutePath(), param, new JREmptyDataSource());
-	            JasperPrintManager.printReport(fillReport,false);
-			}
+			JasperPrint fillReport = null;
+			if(conn==null){
+				fillReport=JasperFillManager.fillReport(inFile.getAbsolutePath(), param, new JREmptyDataSource());
+			}else{
+				fillReport=JasperFillManager.fillReport(inFile.getAbsolutePath(), param, conn);
+			}				
+			OutputStream output = new FileOutputStream(outFile); 
+	        JasperExportManager.exportReportToPdfStream(fillReport, output); 
+			output.flush();
+			output.close();
+			
+			Desktop desktop = Desktop.getDesktop();
+			desktop.open(outFile); // open pdf
+//			desktop.print(outFile); // print pdf A4 only
             
 		} catch (JRException e) {
 			e.printStackTrace();
@@ -113,6 +112,13 @@ public class ReportUtil {
 			System.out.println(key+":"+param.get(key));
 		}
 		System.out.println("####################################");
+	}
+	public void pt201(String receiptNo) throws Exception {
+		Map<String,Object> param = new HashMap<String,Object>();
+        param.put("P_RECEIPT_NO", receiptNo);
+        String[] recArr = receiptNo.split("/");
+        String destFile = "pdf/receiptNo/"+recArr[1]+"/"+recArr[0]+".pdf";
+        printReport("report/PT201R1.jasper",destFile,param, DBUtil.connect() );
 	}
 		
 }

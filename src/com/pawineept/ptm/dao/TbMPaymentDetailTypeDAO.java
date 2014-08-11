@@ -181,7 +181,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 
 	public List<TbMPaymentDetailType> findActiveListByParentName(
 			Connection conn, String parentname) throws SQLException {
-		String sql = "select D.ID, D.PAY_DETAIL_TYPE_NAME, D.COST  from TB_M_PAYMENT_DETAIL_TYPE D "
+		String sql = "select D.ID, D.PAY_DETAIL_TYPE_NAME, D.COST, D.TOTAL_NUM  from TB_M_PAYMENT_DETAIL_TYPE D "
 				+ "join TB_M_PAYMENT_TYPE T ON T.ID=D.PAY_TYPE_ID "
 				+ "WHERE D.STATUS=1 AND T.STATUS=1 AND T.PAY_TYPE_NAME = ? ORDER BY 1";
 		PreparedStatement ps = null;
@@ -196,6 +196,7 @@ public class TbMPaymentDetailTypeDAO extends BaseDAO {
 				TbMPaymentDetailType obj = new TbMPaymentDetailType();
 				obj.setCost(rs.getInt("COST"));
 				obj.setId(rs.getInt("ID"));
+				obj.setTotal_num(rs.getInt("TOTAL_NUM"));
 				obj.setPay_detail_type_name(rs.getString("PAY_DETAIL_TYPE_NAME"));
 				lst.add(obj);
 			}

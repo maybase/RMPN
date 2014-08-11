@@ -1,7 +1,9 @@
 package com.pawineept.ptm.layout;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -29,16 +31,24 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 
-import com.ibm.icu.math.BigDecimal;
+import com.pawineept.ptm.dao.TbRunningnoDAO;
 import com.pawineept.ptm.dao.TbTPatientDAO;
+import com.pawineept.ptm.dao.TbTPaymentDAO;
+import com.pawineept.ptm.dao.TbTPaymentDetailDAO;
 import com.pawineept.ptm.dao.TbTScheduleDAO;
+import com.pawineept.ptm.model.TbRunningno;
 import com.pawineept.ptm.model.TbTPatient;
+import com.pawineept.ptm.model.TbTPayment;
+import com.pawineept.ptm.model.TbTPaymentDetail;
 import com.pawineept.ptm.model.TbTSchedule;
 import com.pawineept.ptm.popup.PaymentDetailAddDialog;
 import com.pawineept.ptm.util.DBUtil;
+import com.pawineept.ptm.util.ReportUtil;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 
 public class PaymentLayout extends Composite {
 	private Text txtMoney;
@@ -56,6 +66,8 @@ public class PaymentLayout extends Composite {
 	private Text txtChange;
 	private Text txtName;
 	private Text txtAddress;
+	private Label vReceiptNo;
+	private Label vMessage;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -63,12 +75,12 @@ public class PaymentLayout extends Composite {
 	 */
 	public PaymentLayout(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(2, false));
+		setLayout(new GridLayout(3, false));
 		final SimpleDateFormat sdflong = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.US);
 		Group group = new Group(this, SWT.NONE);
 		group.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
 		group.setLayout(new GridLayout(3, false));
-		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		group.setText("เลือกผู้รับบริการ");
 		
 		Label label = new Label(group, SWT.NONE);
@@ -117,7 +129,7 @@ public class PaymentLayout extends Composite {
 		Group group_1 = new Group(this, SWT.NONE);
 		group_1.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
 		group_1.setLayout(new GridLayout(8, false));
-		group_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		group_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		group_1.setText("รายละเอียดผู้ใช้บริการ");
 		
 		Label lblPtNo = new Label(group_1, SWT.NONE);
@@ -217,14 +229,27 @@ public class PaymentLayout extends Composite {
 		
 		Group group_2 = new Group(this, SWT.NONE);
 		group_2.setLayout(new GridLayout(6, false));
-		group_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
+		group_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 3, 1));
 		group_2.setText("รายการค่าชำระปัจจุบัน");
-		new Label(group_2, SWT.NONE);
-		new Label(group_2, SWT.NONE);
+		
+		Label lblReceiptNo = new Label(group_2, SWT.NONE);
+		lblReceiptNo.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblReceiptNo.setText("RECEIPT NO");
+		
+		vReceiptNo = new Label(group_2, SWT.NONE);
+		vReceiptNo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		vReceiptNo.setText("-");
 		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
 		
 		Button btnDelPay = new Button(group_2, SWT.NONE);
+		btnDelPay.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int selected = table.getSelectionIndex();
+				table.remove(selected);
+			}
+		});
 		btnDelPay.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		btnDelPay.setText("ลบรายการ");
 		
@@ -310,8 +335,6 @@ public class PaymentLayout extends Composite {
 		        }
 			}
 		});
-		editor.grabHorizontal = true;
-		editor2.grabHorizontal = true;
 		new Label(group_2, SWT.NONE);
 		
 		//new Label(group_2, SWT.NONE);
@@ -344,6 +367,15 @@ public class PaymentLayout extends Composite {
 		label_12.setText("รับเงินจำนวน");
 		
 		txtMoney = new Text(group_2, SWT.RIGHT);	
+		txtMoney.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				Double money = new Double(txtMoney.getText());
+				Double totalamount = new Double(txtBalance.getText());
+				Double changeAmount = money-totalamount;
+				txtChange.setText(String.valueOf(new BigDecimal(changeAmount).setScale(2)));
+			}
+		});
 		txtMoney.setText("0.00");
 		txtMoney.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		txtMoney.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -407,12 +439,94 @@ public class PaymentLayout extends Composite {
 		label_15.setText("บาท");
 		new Label(group_2, SWT.NONE);
 		new Label(group_2, SWT.NONE);
+		editor.grabHorizontal = true;
+		editor2.grabHorizontal = true;
+		
+		vMessage = new Label(this, SWT.RIGHT);
+		GridData gd_vMessage = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_vMessage.widthHint = 430;
+		vMessage.setLayoutData(gd_vMessage);
 		
 		Button button_1 = new Button(this, SWT.NONE);
 		button_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				Connection conn = null;
+				
 				// insert payment
+				int itemcount = table.getItemCount();
+				try {
+					conn = DBUtil.connect();
+					TbRunningnoDAO runningnoDAO = new TbRunningnoDAO();
+					TbRunningno runningno = new TbRunningno();
+					runningno.setPrefix("RECEIPT_NO");
+					SimpleDateFormat yearf = new SimpleDateFormat("yyyy",new Locale("th","TH"));
+					runningno.setYear(yearf.format(new java.util.Date()));
+					Integer receiptNoInt = runningnoDAO.selectMaxRunNo(conn, runningno);
+					if(receiptNoInt==null){
+						runningno.setRunNum(1L);
+						runningnoDAO.insertRunNo(conn, runningno);
+						receiptNoInt = 1;
+					}else{
+						receiptNoInt++;
+						runningno.setRunNum(receiptNoInt.longValue());
+						runningnoDAO.runNoplus(conn, runningno);
+						
+					}
+					DecimalFormat receiptFormat = new DecimalFormat("0000/"+yearf.format(new java.util.Date()));
+					String receiptNo = receiptFormat.format(receiptNoInt);
+					System.out.println(receiptNo);
+					
+					SimpleDateFormat enFormat = new SimpleDateFormat("dd MMMMM yyyy",Locale.US);
+					SimpleDateFormat thFormat = new SimpleDateFormat("dd MMMMM yyyy",new Locale("th","TH"));
+					
+					TbTPayment tbTPayment = new TbTPayment();
+					tbTPayment.setReceiptNo(receiptNo);
+					tbTPayment.setPatientName(txtName.getText());
+					tbTPayment.setPatientId(vPtNo.getText());
+					tbTPayment.setFlagPrint(0L);
+					tbTPayment.setDateTextEn(enFormat.format(new java.util.Date()));
+					tbTPayment.setDateTextTh(thFormat.format(new java.util.Date()));
+					tbTPayment.setCreateBy("1");
+					tbTPayment.setCreateDatetime(new Timestamp(new java.util.Date().getTime()));
+					TbTPaymentDAO tbTPaymentDAO = new TbTPaymentDAO();
+					Long paymentid = tbTPaymentDAO.insert(conn,tbTPayment);
+					BigDecimal totalAmount = new BigDecimal(0);
+					TbTPaymentDetailDAO paymentDetailDAO = new TbTPaymentDetailDAO();
+					for(int i=0; i<itemcount; i++){
+						@SuppressWarnings("unchecked")
+						HashMap<String,Object> hashMap = (HashMap<String,Object>)table.getItem(i).getData();
+						System.out.println("ID : "+hashMap.get("ID"));
+						System.out.println("COST : "+hashMap.get("COST"));
+						System.out.println("UNIT : "+hashMap.get("UNIT"));
+						BigDecimal amount = new BigDecimal(hashMap.get("COST").toString());
+						totalAmount.add(amount);
+						TbTPaymentDetail detail = new TbTPaymentDetail();
+						detail.setAmount(amount);
+						detail.setCreateBy("1");
+						detail.setCreateDatetime(new Timestamp(new java.util.Date().getTime()));
+						detail.setPayDetailType(new Long(hashMap.get("ID").toString()));
+						if(hashMap.get("UNIT")==null){
+							detail.setUnit(1);
+						}else{
+							detail.setUnit(new Integer(hashMap.get("UNIT").toString()));
+						}						
+						detail.setPaymentid(paymentid);
+						detail.setReceiptNo(receiptNo);
+						paymentDetailDAO.insert(conn,detail);						
+						
+					}
+					tbTPayment.setTotalAmount(totalAmount);
+					tbTPaymentDAO.updateTotalAmount(conn,receiptNo,totalAmount);
+					vReceiptNo.setText(receiptNo);
+					vMessage.setText("บันทึกข้อมูลเรียบร้อยแล้ว");
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					vMessage.setText(e1.getMessage());
+				}finally{
+					if(conn!=null) DBUtil.close(conn);
+				}
 				
 			}
 		});
@@ -421,6 +535,23 @@ public class PaymentLayout extends Composite {
 		button_1.setText("ชำระค่าบริการ");
 		
 		Button button_2 = new Button(this, SWT.NONE);
+		button_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(vReceiptNo.getText().trim().length()>1){
+					ReportUtil report = new ReportUtil();
+					try {
+						report.pt201(vReceiptNo.getText());
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						vMessage.setText("ไม่สามารถสร้างเอกสารปริ้นได้ :: "+e1.getMessage());
+					}
+					vMessage.setText("คุณได้พิมพ์ใบเสร็จ");
+				}else{
+					vMessage.setText("คุณยังไม่ได้กด ชำระค่าบริการ");
+				}
+			}
+		});
 		button_2.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		button_2.setText("พิมพ์ใบเสร็จรับเงิน");
 	}
@@ -452,6 +583,7 @@ public class PaymentLayout extends Composite {
 		TableItem[] items =  table.getItems();
 		double total = 0.0;
 		for (TableItem tableItem : items) {
+			@SuppressWarnings("unchecked")
 			HashMap<String,Object> hashMap = (HashMap<String, Object>) tableItem.getData();
 			System.out.println(hashMap.get("COST"));
 			total += Double.parseDouble(String.valueOf(hashMap.get("COST")));

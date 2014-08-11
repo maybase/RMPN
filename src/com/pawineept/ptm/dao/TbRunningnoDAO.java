@@ -8,7 +8,7 @@ import com.pawineept.ptm.model.TbRunningno;
 import com.pawineept.ptm.util.DBUtil;
 
 public class TbRunningnoDAO extends BaseDAO{
-    public int selectMaxRunNo(Connection conn,TbRunningno obj) throws SQLException{
+    public Integer selectMaxRunNo(Connection conn,TbRunningno obj) throws SQLException{
          
         String sql = "select * from tb_runningno where prefix = ?  and year = ? ";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -16,7 +16,7 @@ public class TbRunningnoDAO extends BaseDAO{
         value(ps,i++,obj.getPrefix());
         value(ps,i++,obj.getYear());
         ResultSet rs = ps.executeQuery();
-        int runNum = 0;
+        Integer runNum = null;
         if(rs.next()){
             runNum = rs.getInt("RUN_NUM");
         }

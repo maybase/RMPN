@@ -1,9 +1,11 @@
 package com.pawineept.ptm.dao;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+
 
 public class BaseDAO {
 	public Long getLong(long num){
@@ -39,4 +41,12 @@ public class BaseDAO {
             ps.setTimestamp(i, obj);
         }
     }
+    
+    protected void value(PreparedStatement ps, int i, BigDecimal obj) throws SQLException {
+    	if(obj==null){
+            ps.setNull(i, Types.DECIMAL);
+        }else{
+            ps.setDouble(i, obj.doubleValue());
+        }
+	}
 }

@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PT201R1" language="groovy" pageWidth="396" pageHeight="595" orientation="Landscape" columnWidth="356" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4ff2191e-34bc-4309-8ce6-ac025d00ea87">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PT201R1" pageWidth="396" pageHeight="595" columnWidth="356" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4ff2191e-34bc-4309-8ce6-ac025d00ea87">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-	<style name="table">
-		<box>
-			<pen lineWidth="1.0" lineColor="#000000"/>
-		</box>
-	</style>
+	<property name="ireport.y" value="130"/>
+	<style name="table"/>
 	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -23,25 +19,27 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="in_receipt_no" class="java.lang.String">
+	<parameter name="P_RECEIPT_NO" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT P.RECEIPT_NO,P.PATIENTID,P.PATIENTNAME, P.DATE_TEXT_EN, P.DATE_TEXT_TH , P.TOTAL_AMOUNT, T.PAY_DETAIL_TYPE_NAME, D.AMOUNT
+		<![CDATA[SELECT P.RECEIPT_NO,P.PATIENTID,P.PATIENTNAME, P.DATE_TEXT_EN, P.DATE_TEXT_TH , T.PAY_DETAIL_TYPE_NAME, D.AMOUNT
 FROM TB_T_PAYMENT P
-INNER JOIN TB_T_PAYMENT_DETAIL D ON P.PAYMENTID = D.PAYMENTID
+INNER JOIN TB_T_PAYMENT_DETAIL D ON P.RECEIPT_NO = D.RECEIPT_NO
 INNER JOIN TB_M_PAYMENT_DETAIL_TYPE T ON D.PAY_DETAIL_TYPE = T.ID
-WHERE P.RECEIPT_NO=$P{in_receipt_no}
---GROUP BY P.RECEIPT_NO,P.PATIENTID,P.PATIENTNAME, P.DATE_TEXT_EN, P.DATE_TEXT_TH , P.TOTAL_AMOUNT]]>
+WHERE P.RECEIPT_NO=$P{P_RECEIPT_NO}]]>
 	</queryString>
 	<field name="RECEIPT_NO" class="java.lang.Object"/>
 	<field name="PATIENTID" class="java.lang.Object"/>
 	<field name="PATIENTNAME" class="java.lang.Object"/>
 	<field name="DATE_TEXT_EN" class="java.lang.Object"/>
 	<field name="DATE_TEXT_TH" class="java.lang.Object"/>
-	<field name="TOTAL_AMOUNT" class="java.lang.Object"/>
 	<field name="PAY_DETAIL_TYPE_NAME" class="java.lang.Object"/>
-	<field name="AMOUNT" class="java.lang.Object"/>
+	<field name="AMOUNT" class="java.lang.Double"/>
+	<variable name="AMOUNT_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{AMOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
 	<background>
 		<band height="555" splitType="Stretch">
 			<line>
@@ -118,7 +116,7 @@ NO.]]></text>
 				<textElement>
 					<font fontName="TH SarabunPSK" size="14" pdfFontName="THSarabun.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{RECEIPT_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{P_RECEIPT_NO}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="52" y="110" width="196" height="20" uuid="697a1ea0-7bcc-4e5a-81bb-a26cd63150ee"/>
@@ -233,7 +231,7 @@ AMOUNT]]></text>
 	</detail>
 	<columnFooter>
 		<band height="21" splitType="Stretch">
-			<textField pattern="#,##0.00">
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="#,##0.00">
 				<reportElement x="256" y="0" width="100" height="20" uuid="61b7cfca-3618-4c6d-b014-451441a2a488"/>
 				<box rightPadding="5">
 					<topPen lineWidth="1.0"/>
@@ -243,7 +241,7 @@ AMOUNT]]></text>
 				<textElement textAlignment="Right">
 					<font fontName="TH SarabunPSK" size="14" isBold="true" pdfFontName="THSarabun Bold.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{AMOUNT_1}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="0" width="256" height="20" uuid="84d99a13-5380-4aaa-b77e-c67f77f1e30c"/>
